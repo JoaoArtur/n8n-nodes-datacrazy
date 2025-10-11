@@ -51,6 +51,7 @@ import {
 	updateTag,
 	deleteTag,
 	buildTagData,
+	getTagsForLoadOptions,
 } from './properties/tags';
 import {
 	moveDealAction,
@@ -194,6 +195,38 @@ export class DataCrazy implements INodeType {
 					throw new NodeOperationError(
 						this.getNode(),
 						`Erro ao carregar motivos de perda: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getTags(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					// Chamar a função getTagsForLoadOptions
+					const tagsResponse = await getTagsForLoadOptions.call(this);
+
+					// A resposta da API retorna um objeto com 'data' contendo o array de tags
+					let tags: any[] = [];
+
+					// Verificar se a resposta tem a estrutura esperada
+					if (tagsResponse && tagsResponse.data && Array.isArray(tagsResponse.data)) {
+						tags = tagsResponse.data;
+					} else if (tagsResponse && Array.isArray(tagsResponse)) {
+						// Caso a resposta seja diretamente um array (fallback)
+						tags = tagsResponse;
+					} else {
+						console.error('Estrutura inesperada da resposta de tags:', tagsResponse);
+						return [];
+					}
+
+					// Mapear as tags para o formato esperado pelo n8n
+					return tags.map((tag: any) => ({
+						name: tag.name,
+						value: tag.id,
+					}));
+				} catch (error) {
+					console.error('Erro ao carregar tags:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar tags: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
 					);
 				}
 			},

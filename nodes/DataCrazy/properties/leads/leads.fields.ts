@@ -227,26 +227,12 @@ const leadsFields: INodeProperties[] = [
 			{
 				displayName: 'Tags',
 				name: 'tags',
-				type: 'fixedCollection',
-				default: {},
+				type: 'multiOptions',
 				typeOptions: {
-					multipleValues: true,
+					loadOptionsMethod: 'getTags',
 				},
-				options: [
-					{
-						name: 'tagDetails',
-						displayName: 'Tag',
-						values: [
-							{
-								displayName: 'IDs das Tags',
-								name: 'id',
-								type: 'string',
-								default: '',
-								description: 'IDs das tags separados por vírgula',
-							},
-						],
-					},
-				],
+				default: [],
+				description: 'Selecione as tags para associar ao lead',
 			},
 			{
 				displayName: 'Listas',
@@ -381,9 +367,50 @@ const leadsFields: INodeProperties[] = [
 					{
 						displayName: 'Tags',
 						name: 'tags',
-						type: 'string',
-						default: '',
-						description: 'Lista de IDs de tags. Formato: <operação> <id1>,<id2>,<id3>. Operações: some, every, none. Ex: "every 849fefab-e697-4720-9303-e788c23790cc,9e008d34-86d2-49fd-90af-34a9f9b29896"',
+						type: 'fixedCollection',
+						default: {},
+						typeOptions: {
+							multipleValues: false,
+						},
+						options: [
+							{
+								name: 'tagFilter',
+								displayName: 'Filtro de Tags',
+								values: [
+									{
+										displayName: 'Operação',
+										name: 'operation',
+										type: 'options',
+										options: [
+											{
+												name: 'Alguma das tags (some)',
+												value: 'some',
+											},
+											{
+												name: 'Todas as tags (every)',
+												value: 'every',
+											},
+											{
+												name: 'Nenhuma das tags (none)',
+												value: 'none',
+											},
+										],
+										default: 'some',
+										description: 'Operação a ser aplicada na filtragem de tags',
+									},
+									{
+										displayName: 'Tags',
+										name: 'tagIds',
+										type: 'multiOptions',
+										typeOptions: {
+											loadOptionsMethod: 'getTags',
+										},
+										default: [],
+										description: 'Selecione as tags para filtrar',
+									},
+								],
+							},
+						],
 					},
 					{
 						displayName: 'Estágios',

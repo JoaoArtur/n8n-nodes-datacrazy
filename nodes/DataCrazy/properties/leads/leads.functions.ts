@@ -70,11 +70,9 @@ export function buildLeadData(parameters: any): ILead {
 			leadData.sourceReferral = additional.sourceReferral.sourceReferralDetails;
 		}
 
-		// Handle tags
-		if (additional.tags?.length > 0) {
-			leadData.tags = additional.tags.map((tag: any) => ({
-				id: tag.tagDetails?.id ? tag.tagDetails.id.split(',').map((id: string) => id.trim()) : []
-			}));
+		// Handle tags - novo formato com multiple select
+		if (additional.tags && additional.tags.length > 0) {
+			leadData.tags = additional.tags.map((tagId: string) => ({ id: tagId }));
 		}
 
 		// Handle lists
@@ -117,8 +115,14 @@ export function buildLeadQueryParams(options: any): any {
 		
 		// Processar cada filtro individualmente
 		options.filters.forEach((filterItem: any) => {
-			if (filterItem.tags && filterItem.tags.trim()) {
-				queryParams.filter.tags = filterItem.tags.trim();
+			// Processar filtro de tags no novo formato
+			if (filterItem.tags && filterItem.tags.tagFilter) {
+				const tagFilter = filterItem.tags.tagFilter;
+				if (tagFilter.operation && tagFilter.tagIds && tagFilter.tagIds.length > 0) {
+					const operation = tagFilter.operation;
+					const tagIds = tagFilter.tagIds.join(',');
+					queryParams.filter.tags = `${operation} ${tagIds}`;
+				}
 			}
 			if (filterItem.stages && filterItem.stages.trim()) {
 				queryParams.filter.stages = filterItem.stages.trim();

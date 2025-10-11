@@ -47,6 +47,7 @@ export interface IDealQueryParams {
 	take?: number;
 	search?: string;
 	filter?: IBusinessFilterOptions;
+	filters?: any[]; // Para os novos filtros separados
 }
 
 /**

@@ -1,5 +1,5 @@
-import { IExecuteFunctions } from 'n8n-workflow';
-import { request } from '../../GenericFunctions';
+import { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
+import { request, requestForLoadOptions } from '../../GenericFunctions';
 import { ITag, ITagCreate, ITagUpdate, ITagResponse } from './tags.types';
 
 /**
@@ -40,6 +40,18 @@ export async function updateTag(this: IExecuteFunctions, tagId: string, tagData:
 export async function deleteTag(this: IExecuteFunctions, tagId: string): Promise<void> {
 	const endpoint = `/tags/${tagId}`;
 	return await request(this, 'DELETE', endpoint);
+}
+
+/**
+ * Buscar todas as tags para loadOptions
+ */
+export async function getTagsForLoadOptions(this: ILoadOptionsFunctions): Promise<ITagResponse> {
+	try {
+		const response = await requestForLoadOptions(this, 'GET', '/tags');
+		return response as ITagResponse;
+	} catch (error: any) {
+		throw new Error(`Erro ao buscar tags: ${error.message}`);
+	}
 }
 
 /**

@@ -130,6 +130,86 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 	}
 
 	// Filtros avançados - usar formato de objeto aninhado para gerar filter[campo]
+	if (queryParams.filters && Array.isArray(queryParams.filters) && queryParams.filters.length > 0) {
+		if (!qs.filter) {
+			qs.filter = {};
+		}
+
+		// Processar cada filtro individualmente
+		queryParams.filters.forEach((filterItem: any) => {
+			// Processar filtro de tags no novo formato
+			if (filterItem.tags && filterItem.tags.tagFilter) {
+				const tagFilter = filterItem.tags.tagFilter;
+				if (tagFilter.operation && tagFilter.tagIds && tagFilter.tagIds.length > 0) {
+					const operation = tagFilter.operation;
+					const tagIds = tagFilter.tagIds.join(',');
+					qs.filter.tags = `${operation} ${tagIds}`;
+				}
+			}
+
+			if (filterItem.lossReason !== undefined && filterItem.lossReason.trim() !== '') {
+				qs.filter.lossReason = filterItem.lossReason.trim();
+			}
+
+			if (filterItem.products !== undefined && filterItem.products.trim() !== '') {
+				qs.filter.products = filterItem.products.trim();
+			}
+
+			if (filterItem.attendants !== undefined && filterItem.attendants.length > 0) {
+				qs.filter.attendants = filterItem.attendants.join(',');
+			}
+
+			if (filterItem.fields !== undefined && filterItem.fields.trim() !== '') {
+				qs.filter.fields = filterItem.fields.trim();
+			}
+
+			if (filterItem.status !== undefined && filterItem.status.trim() !== '') {
+				qs.filter.status = filterItem.status.trim();
+			}
+
+			if (filterItem.businessFields !== undefined && filterItem.businessFields.trim() !== '') {
+				qs.filter.businessFields = filterItem.businessFields.trim();
+			}
+
+			if (filterItem.source !== undefined && filterItem.source.trim() !== '') {
+				qs.filter.source = filterItem.source.trim();
+			}
+
+			if (filterItem.minValue !== undefined) {
+				qs.filter.minValue = filterItem.minValue;
+			}
+
+			if (filterItem.maxValue !== undefined) {
+				qs.filter.maxValue = filterItem.maxValue;
+			}
+
+			if (filterItem.startDate !== undefined && filterItem.startDate.trim() !== '') {
+				qs.filter.startDate = filterItem.startDate.trim();
+			}
+
+			if (filterItem.endDate !== undefined && filterItem.endDate.trim() !== '') {
+				qs.filter.endDate = filterItem.endDate.trim();
+			}
+
+			if (filterItem.createdAtGreaterOrEqual !== undefined && filterItem.createdAtGreaterOrEqual.trim() !== '') {
+				qs.filter.createdAtGreaterOrEqual = filterItem.createdAtGreaterOrEqual.trim();
+			}
+
+			if (filterItem.createdAtLessOrEqual !== undefined && filterItem.createdAtLessOrEqual.trim() !== '') {
+				qs.filter.createdAtLessOrEqual = filterItem.createdAtLessOrEqual.trim();
+			}
+
+			if (filterItem.lastMovedAfter !== undefined && filterItem.lastMovedAfter.trim() !== '') {
+				qs.filter.lastMovedAfter = filterItem.lastMovedAfter.trim();
+			}
+
+			if (filterItem.lastMovedBefore !== undefined && filterItem.lastMovedBefore.trim() !== '') {
+				qs.filter.lastMovedBefore = filterItem.lastMovedBefore.trim();
+			}
+		});
+	}
+
+	// Filtros antigos (manter compatibilidade)
 	if (queryParams.filter) {
 		const filter = queryParams.filter;
 

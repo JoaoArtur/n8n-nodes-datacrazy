@@ -3,9 +3,12 @@ import { INodeProperties } from 'n8n-workflow';
 export const tagsFields: INodeProperties[] = [
 	// Campo Tag ID - usado para get, update e delete
 	{
-		displayName: 'ID da Tag',
+		displayName: 'Tag',
 		name: 'tagId',
-		type: 'string',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getTags',
+		},
 		required: true,
 		displayOptions: {
 			show: {
@@ -14,7 +17,7 @@ export const tagsFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'ID da tag',
+		description: 'Selecione a tag',
 	},
 
 	// Campo Nome - obrigatório para create, opcional para update
