@@ -10,7 +10,7 @@ const leadsFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['leads'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update', 'delete', 'getActivities', 'getHistory', 'getBusinesses'],
 			},
 		},
 		default: '',

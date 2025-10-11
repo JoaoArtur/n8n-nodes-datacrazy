@@ -1,6 +1,9 @@
 import { INodeProperties } from 'n8n-workflow';
 import { leadsFields, leadsOperations } from './leads';
 import { dealsFields, dealsOperations } from './deals';
+import { attachmentsFields, attachmentsOperations } from './attachments';
+import { annotationsFields, annotationsOperations } from './annotations';
+import { tagsFields, tagsOperations } from './tags';
 
 const resourcesOptions: INodeProperties = {
 	displayName: 'Recurso',
@@ -16,6 +19,18 @@ const resourcesOptions: INodeProperties = {
 			name: 'Negócios',
 			value: 'deals',
 		},
+		{
+			name: 'Anexos',
+			value: 'attachments',
+		},
+		{
+			name: 'Anotações',
+			value: 'annotations',
+		},
+		{
+			name: 'Tags',
+			value: 'tags',
+		},
 	],
 	default: 'leads',
 };
@@ -26,4 +41,10 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	...leadsFields,
 	...dealsOperations,
 	...dealsFields,
+	...attachmentsOperations,
+	...attachmentsFields,
+	...annotationsOperations,
+	...annotationsFields,
+	...tagsOperations,
+	...tagsFields,
 ];

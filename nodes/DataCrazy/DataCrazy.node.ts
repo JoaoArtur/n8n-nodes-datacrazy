@@ -15,6 +15,9 @@ import {
 	deleteLead,
 	buildLeadData,
 	buildLeadQueryParams,
+	getLeadActivities,
+	getLeadHistory,
+	getLeadBusinesses,
 } from './properties/leads';
 import {
 	getAllDeals,
@@ -25,6 +28,27 @@ import {
 	buildDealData,
 	buildDealQueryParams,
 } from './properties/deals';
+import {
+	getLeadAttachments,
+	createLeadAttachment,
+	deleteLeadAttachment,
+	buildAttachmentData,
+} from './properties/attachments';
+import {
+	getLeadNotes,
+	createLeadNote,
+	updateLeadNote,
+	deleteLeadNote,
+	buildNoteData,
+} from './properties/annotations';
+import {
+	getAllTags,
+	createTag,
+	getTagById,
+	updateTag,
+	deleteTag,
+	buildTagData,
+} from './properties/tags';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -101,6 +125,21 @@ export class DataCrazy implements INodeType {
 							responseData = await deleteLead(this, deleteLeadId);
 							break;
 
+						case 'getActivities':
+							const activitiesLeadId = this.getNodeParameter('leadId', i) as string;
+							responseData = await getLeadActivities(this, activitiesLeadId);
+							break;
+
+						case 'getHistory':
+							const historyLeadId = this.getNodeParameter('leadId', i) as string;
+							responseData = await getLeadHistory(this, historyLeadId);
+							break;
+
+						case 'getBusinesses':
+							const businessesLeadId = this.getNodeParameter('leadId', i) as string;
+							responseData = await getLeadBusinesses(this, businessesLeadId);
+							break;
+
 						default:
 							throw new NodeOperationError(
 								this.getNode(),
@@ -143,6 +182,108 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteDealId = this.getNodeParameter('dealId', i) as string;
 							responseData = await deleteDeal.call(this, deleteDealId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'attachments') {
+					const leadId = this.getNodeParameter('leadId', i) as string;
+					
+					switch (operation) {
+						case 'getAll':
+							responseData = await getLeadAttachments(this, leadId);
+							break;
+
+						case 'create':
+							const attachmentData = buildAttachmentData({
+								attachmentUrl: this.getNodeParameter('attachmentUrl', i) as string,
+								fileName: this.getNodeParameter('fileName', i) as string,
+								fileSize: this.getNodeParameter('fileSize', i) as string,
+								description: this.getNodeParameter('description', i, '') as string,
+							});
+							responseData = await createLeadAttachment(this, leadId, attachmentData);
+							break;
+
+						case 'delete':
+							const attachmentId = this.getNodeParameter('attachmentId', i) as string;
+							responseData = await deleteLeadAttachment(this, leadId, attachmentId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'annotations') {
+					const leadId = this.getNodeParameter('leadId', i) as string;
+					
+					switch (operation) {
+						case 'getAll':
+							responseData = await getLeadNotes(this, leadId);
+							break;
+
+						case 'create':
+							const noteData = buildNoteData({
+								note: this.getNodeParameter('note', i) as string,
+							});
+							responseData = await createLeadNote(this, leadId, noteData);
+							break;
+
+						case 'update':
+							const noteId = this.getNodeParameter('noteId', i) as string;
+							const updateNoteData = buildNoteData({
+								note: this.getNodeParameter('note', i) as string,
+							});
+							responseData = await updateLeadNote(this, leadId, noteId, updateNoteData);
+							break;
+
+						case 'delete':
+							const deleteNoteId = this.getNodeParameter('noteId', i) as string;
+							responseData = await deleteLeadNote(this, leadId, deleteNoteId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'tags') {
+					switch (operation) {
+						case 'getAll':
+							responseData = await getAllTags.call(this);
+							break;
+
+						case 'create':
+							const createTagData = buildTagData({
+								name: this.getNodeParameter('name', i) as string,
+								color: this.getNodeParameter('color', i) as string,
+								...this.getNodeParameter('additionalFields', i) as object,
+							}) as any;
+							responseData = await createTag.call(this, createTagData);
+							break;
+
+						case 'get':
+							const tagId = this.getNodeParameter('tagId', i) as string;
+							responseData = await getTagById.call(this, tagId);
+							break;
+
+						case 'update':
+							const updateTagId = this.getNodeParameter('tagId', i) as string;
+							const updateTagData = buildTagData({
+								...this.getNodeParameter('additionalFields', i) as object,
+							});
+							responseData = await updateTag.call(this, updateTagId, updateTagData);
+							break;
+
+						case 'delete':
+							const deleteTagId = this.getNodeParameter('tagId', i) as string;
+							responseData = await deleteTag.call(this, deleteTagId);
 							break;
 
 						default:

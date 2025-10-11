@@ -108,3 +108,25 @@ export function buildLeadQueryParams(options: any): ILeadQueryParams {
 
 	return queryParams;
 }
+
+// New lead-related functions
+export async function getLeadActivities(
+	context: IExecuteFunctions,
+	leadId: string,
+): Promise<any> {
+	return await request(context, 'GET', `/leads/${leadId}/activities`);
+}
+
+export async function getLeadHistory(
+	context: IExecuteFunctions,
+	leadId: string,
+): Promise<any> {
+	return await request(context, 'GET', `/leads/${leadId}/history`);
+}
+
+export async function getLeadBusinesses(
+	context: IExecuteFunctions,
+	leadId: string,
+): Promise<any> {
+	return await request(context, 'GET', `/leads/${leadId}/businesses`);
+}
