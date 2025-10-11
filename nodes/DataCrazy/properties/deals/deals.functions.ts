@@ -13,6 +13,46 @@ import {
 	IDealResponse,
 } from './deals.types';
 
+// Função auxiliar para formatar data para ISO 8601
+function formatDateToISO(dateValue: string): string {
+	// Se já está no formato ISO 8601 completo, retorna como está
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)) {
+		return dateValue;
+	}
+	
+	// Se está no formato ISO 8601 mas sem milissegundos, adiciona
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)) {
+		return dateValue.replace('Z', '.000Z');
+	}
+	
+	// Se está no formato ISO 8601 mas sem timezone, adiciona
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
+		return dateValue + '.000Z';
+	}
+	
+	// Se está no formato YYYY-MM-DD HH:mm:ss, converte para ISO 8601
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
+		return dateValue.replace(' ', 'T') + '.000Z';
+	}
+	
+	// Se está no formato YYYY-MM-DD, adiciona horário
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+		return dateValue + 'T00:00:00.000Z';
+	}
+	
+	// Tenta criar uma data válida e converter para ISO
+	try {
+		const date = new Date(dateValue);
+		if (!isNaN(date.getTime())) {
+			return date.toISOString();
+		}
+	} catch (error) {
+		// Se não conseguir converter, retorna o valor original
+	}
+	
+	return dateValue;
+}
+
 /**
  * Busca todos os negócios
  */
@@ -192,11 +232,15 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 			}
 
 			if (filterItem.createdAtGreaterOrEqual !== undefined && filterItem.createdAtGreaterOrEqual.trim() !== '') {
-				qs.filter.createdAtGreaterOrEqual = filterItem.createdAtGreaterOrEqual.trim();
+				// Converter para formato ISO 8601 se necessário
+				const dateValue = filterItem.createdAtGreaterOrEqual.trim();
+				qs.filter.createdAtGreaterOrEqual = formatDateToISO(dateValue);
 			}
 
 			if (filterItem.createdAtLessOrEqual !== undefined && filterItem.createdAtLessOrEqual.trim() !== '') {
-				qs.filter.createdAtLessOrEqual = filterItem.createdAtLessOrEqual.trim();
+				// Converter para formato ISO 8601 se necessário
+				const dateValue = filterItem.createdAtLessOrEqual.trim();
+				qs.filter.createdAtLessOrEqual = formatDateToISO(dateValue);
 			}
 
 			if (filterItem.lastMovedAfter !== undefined && filterItem.lastMovedAfter.trim() !== '') {
@@ -266,11 +310,15 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 		}
 
 		if (filter.createdAtGreaterOrEqual !== undefined && filter.createdAtGreaterOrEqual.trim() !== '') {
-			qs.filter.createdAtGreaterOrEqual = filter.createdAtGreaterOrEqual.trim();
+			// Converter para formato ISO 8601 se necessário
+			const dateValue = filter.createdAtGreaterOrEqual.trim();
+			qs.filter.createdAtGreaterOrEqual = formatDateToISO(dateValue);
 		}
 
 		if (filter.createdAtLessOrEqual !== undefined && filter.createdAtLessOrEqual.trim() !== '') {
-			qs.filter.createdAtLessOrEqual = filter.createdAtLessOrEqual.trim();
+			// Converter para formato ISO 8601 se necessário
+			const dateValue = filter.createdAtLessOrEqual.trim();
+			qs.filter.createdAtLessOrEqual = formatDateToISO(dateValue);
 		}
 
 		if (filter.lastMovedAfter !== undefined && filter.lastMovedAfter.trim() !== '') {
