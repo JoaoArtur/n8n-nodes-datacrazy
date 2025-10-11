@@ -112,36 +112,86 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 
 	const qs: any = {};
 
-	if (queryParams.page !== undefined) {
-		qs.page = queryParams.page;
+	// Parâmetros básicos
+	if (queryParams.skip !== undefined) {
+		qs.skip = queryParams.skip;
 	}
 
-	if (queryParams.limit !== undefined) {
-		qs.limit = queryParams.limit;
+	if (queryParams.take !== undefined) {
+		qs.take = queryParams.take;
 	}
 
-	if (queryParams.leadId !== undefined) {
-		qs.leadId = queryParams.leadId;
+	if (queryParams.search !== undefined && queryParams.search.trim() !== '') {
+		qs.search = queryParams.search.trim();
 	}
 
-	if (queryParams.stageId !== undefined) {
-		qs.stageId = queryParams.stageId;
-	}
+	// Filtros avançados
+	if (queryParams.filter) {
+		const filter = queryParams.filter;
 
-	if (queryParams.attendantId !== undefined) {
-		qs.attendantId = queryParams.attendantId;
-	}
+		if (filter.lossReason !== undefined && filter.lossReason.trim() !== '') {
+			qs['filter.lossReason'] = filter.lossReason.trim();
+		}
 
-	if (queryParams.externalId !== undefined) {
-		qs.externalId = queryParams.externalId;
-	}
+		if (filter.tags !== undefined && filter.tags.trim() !== '') {
+			qs['filter.tags'] = filter.tags.trim();
+		}
 
-	if (queryParams.createdAt !== undefined) {
-		qs.createdAt = queryParams.createdAt;
-	}
+		if (filter.products !== undefined && filter.products.trim() !== '') {
+			qs['filter.products'] = filter.products.trim();
+		}
 
-	if (queryParams.updatedAt !== undefined) {
-		qs.updatedAt = queryParams.updatedAt;
+		if (filter.attendants !== undefined && filter.attendants.length > 0) {
+			qs['filter.attendants'] = filter.attendants.join(',');
+		}
+
+		if (filter.fields !== undefined && filter.fields.trim() !== '') {
+			qs['filter.fields'] = filter.fields.trim();
+		}
+
+		if (filter.status !== undefined && filter.status.trim() !== '') {
+			qs['filter.status'] = filter.status.trim();
+		}
+
+		if (filter.businessFields !== undefined && filter.businessFields.trim() !== '') {
+			qs['filter.businessFields'] = filter.businessFields.trim();
+		}
+
+		if (filter.source !== undefined && filter.source.trim() !== '') {
+			qs['filter.source'] = filter.source.trim();
+		}
+
+		if (filter.minValue !== undefined) {
+			qs['filter.minValue'] = filter.minValue;
+		}
+
+		if (filter.maxValue !== undefined) {
+			qs['filter.maxValue'] = filter.maxValue;
+		}
+
+		if (filter.startDate !== undefined && filter.startDate.trim() !== '') {
+			qs['filter.startDate'] = filter.startDate.trim();
+		}
+
+		if (filter.endDate !== undefined && filter.endDate.trim() !== '') {
+			qs['filter.endDate'] = filter.endDate.trim();
+		}
+
+		if (filter.createdAtGreaterOrEqual !== undefined && filter.createdAtGreaterOrEqual.trim() !== '') {
+			qs['filter.createdAtGreaterOrEqual'] = filter.createdAtGreaterOrEqual.trim();
+		}
+
+		if (filter.createdAtLessOrEqual !== undefined && filter.createdAtLessOrEqual.trim() !== '') {
+			qs['filter.createdAtLessOrEqual'] = filter.createdAtLessOrEqual.trim();
+		}
+
+		if (filter.lastMovedAfter !== undefined && filter.lastMovedAfter.trim() !== '') {
+			qs['filter.lastMovedAfter'] = filter.lastMovedAfter.trim();
+		}
+
+		if (filter.lastMovedBefore !== undefined && filter.lastMovedBefore.trim() !== '') {
+			qs['filter.lastMovedBefore'] = filter.lastMovedBefore.trim();
+		}
 	}
 
 	return qs;

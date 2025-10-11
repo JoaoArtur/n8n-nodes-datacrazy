@@ -4,6 +4,8 @@ import { dealsFields, dealsOperations } from './deals';
 import { attachmentsFields, attachmentsOperations } from './attachments';
 import { annotationsFields, annotationsOperations } from './annotations';
 import { tagsFields, tagsOperations } from './tags';
+import { dealActionsOperations, dealIds, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
+import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
 const resourcesOptions: INodeProperties = {
 	displayName: 'Recurso',
@@ -31,6 +33,14 @@ const resourcesOptions: INodeProperties = {
 			name: 'Tags',
 			value: 'tags',
 		},
+		{
+			name: 'Ações de Negócios',
+			value: 'dealActions',
+		},
+		{
+			name: 'Pipelines',
+			value: 'pipelines',
+		},
 	],
 	default: 'leads',
 };
@@ -47,4 +57,15 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	...annotationsFields,
 	...tagsOperations,
 	...tagsFields,
+	...dealActionsOperations,
+	dealIds,
+	destinationStageId,
+	lossReasonId,
+	justification,
+	additionalFields,
+	...pipelinesOperations,
+	pipelineTake,
+	pipelineSkip,
+	pipelineSearch,
+	pipelineId,
 ];

@@ -99,12 +99,42 @@ export function buildLeadData(parameters: any): ILead {
 export function buildLeadQueryParams(options: any): ILeadQueryParams {
 	const queryParams: ILeadQueryParams = {};
 
-	if (options.limit) queryParams.limit = options.limit;
-	if (options.page) queryParams.page = options.page;
-	if (options.sortBy) queryParams.sortBy = options.sortBy;
-	if (options.sortOrder) queryParams.sortOrder = options.sortOrder;
-	if (options.source) queryParams.source = options.source;
-	if (options.email) queryParams.email = options.email;
+	// Parâmetros básicos
+	if (options.skip !== undefined) queryParams.skip = options.skip;
+	if (options.take !== undefined) queryParams.take = options.take;
+	if (options.search) queryParams.search = options.search;
+
+	// Opções de complete
+	if (options.complete?.completeOptions) {
+		queryParams.complete = {};
+		if (options.complete.completeOptions.additionalFields !== undefined) {
+			queryParams.complete.additionalFields = options.complete.completeOptions.additionalFields;
+		}
+	}
+
+	// Filtros avançados - acessar através de filterOptions
+	if (options.filter?.filterOptions) {
+		const filterData = options.filter.filterOptions;
+		queryParams.filter = {};
+		
+		if (filterData.tags) queryParams.filter.tags = filterData.tags;
+		if (filterData.stages) queryParams.filter.stages = filterData.stages;
+		if (filterData.minLastPurchaseDate) queryParams.filter.minLastPurchaseDate = filterData.minLastPurchaseDate;
+		if (filterData.maxLastPurchaseDate) queryParams.filter.maxLastPurchaseDate = filterData.maxLastPurchaseDate;
+		if (filterData.productsInBusiness !== undefined) queryParams.filter.productsInBusiness = filterData.productsInBusiness;
+		if (filterData.minBusinessesCount !== undefined) queryParams.filter.minBusinessesCount = filterData.minBusinessesCount;
+		if (filterData.maxBusinessesCount !== undefined) queryParams.filter.maxBusinessesCount = filterData.maxBusinessesCount;
+		if (filterData.lists) queryParams.filter.lists = filterData.lists;
+		if (filterData.hasMessages !== undefined) queryParams.filter.hasMessages = filterData.hasMessages;
+		if (filterData.notHasMessages !== undefined) queryParams.filter.notHasMessages = filterData.notHasMessages;
+		if (filterData.source) queryParams.filter.source = filterData.source;
+		if (filterData.products) queryParams.filter.products = filterData.products;
+		if (filterData.attendant) queryParams.filter.attendant = filterData.attendant;
+		if (filterData.fields) queryParams.filter.fields = filterData.fields;
+		if (filterData.createdAtGreaterOrEqual) queryParams.filter.createdAtGreaterOrEqual = filterData.createdAtGreaterOrEqual;
+		if (filterData.createdAtLessOrEqual) queryParams.filter.createdAtLessOrEqual = filterData.createdAtLessOrEqual;
+		if (filterData.address) queryParams.filter.address = filterData.address;
+	}
 
 	return queryParams;
 }

@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-datacrazy",
-  "version": "1.0.4",
+  "version": "1.0.11",
   "description": "N8N community node for DataCrazy ",
   "keywords": [
     "n8n-community-node-package"

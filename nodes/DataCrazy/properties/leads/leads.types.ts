@@ -45,11 +45,36 @@ export interface ILead {
 	attendant?: ILeadAttendant;
 }
 
-export interface ILeadQueryParams {
-	limit?: number;
-	page?: number;
-	sortBy?: string;
-	sortOrder?: 'asc' | 'desc';
+// Interfaces para filtros avançados
+export interface ILeadCompleteOptions {
+	additionalFields?: boolean;
+}
+
+export interface ILeadFilterOptions {
+	tags?: string;
+	stages?: string;
+	minLastPurchaseDate?: string;
+	maxLastPurchaseDate?: string;
+	productsInBusiness?: number;
+	minBusinessesCount?: number;
+	maxBusinessesCount?: number;
+	lists?: string;
+	hasMessages?: boolean;
+	notHasMessages?: boolean;
 	source?: string;
-	email?: string;
+	products?: string;
+	attendant?: string;
+	fields?: string;
+	createdAtGreaterOrEqual?: string;
+	createdAtLessOrEqual?: string;
+	address?: string;
+}
+
+export interface ILeadQueryParams {
+	skip?: number;
+	take?: number;
+	search?: string;
+	complete?: ILeadCompleteOptions;
+	filter?: ILeadFilterOptions;
+	[key: string]: any;
 }

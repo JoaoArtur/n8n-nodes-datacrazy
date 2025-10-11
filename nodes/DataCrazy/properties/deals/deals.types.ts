@@ -17,17 +17,35 @@ export interface IDeal {
 }
 
 /**
+ * Interface para opções de filtro de negócios
+ */
+export interface IBusinessFilterOptions {
+	lossReason?: string;
+	tags?: string;
+	products?: string;
+	attendants?: string[];
+	fields?: string;
+	status?: string;
+	businessFields?: string;
+	source?: string;
+	minValue?: number;
+	maxValue?: number;
+	startDate?: string;
+	endDate?: string;
+	createdAtGreaterOrEqual?: string;
+	createdAtLessOrEqual?: string;
+	lastMovedAfter?: string;
+	lastMovedBefore?: string;
+}
+
+/**
  * Interface para parâmetros de consulta de negócios
  */
 export interface IDealQueryParams {
-	page?: number;
-	limit?: number;
-	leadId?: string;
-	stageId?: string;
-	attendantId?: string;
-	externalId?: string;
-	createdAt?: string;
-	updatedAt?: string;
+	skip?: number;
+	take?: number;
+	search?: string;
+	filter?: IBusinessFilterOptions;
 }
 
 /**

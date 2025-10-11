@@ -49,12 +49,27 @@ import {
 	deleteTag,
 	buildTagData,
 } from './properties/tags';
+import {
+	moveDealAction,
+	winDealAction,
+	loseDealAction,
+	restoreDealAction,
+	buildMoveActionData,
+	buildWinActionData,
+	buildLoseActionData,
+	buildRestoreActionData,
+} from './properties/deal-actions';
+import {
+	getAllPipelines,
+	buildPipelineQueryParams,
+	getPipelineStages,
+} from './properties/pipelines';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'DataCrazy',
 		name: 'dataCrazy',
-		icon: 'file:datacrazy.svg',
+		icon: 'file:logo.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Interagir com DataCrazy API para gerenciamento de leads, negócios e CRM',
@@ -192,7 +207,7 @@ export class DataCrazy implements INodeType {
 					}
 				} else if (resource === 'attachments') {
 					const leadId = this.getNodeParameter('leadId', i) as string;
-					
+
 					switch (operation) {
 						case 'getAll':
 							responseData = await getLeadAttachments(this, leadId);
@@ -221,7 +236,7 @@ export class DataCrazy implements INodeType {
 					}
 				} else if (resource === 'annotations') {
 					const leadId = this.getNodeParameter('leadId', i) as string;
-					
+
 					switch (operation) {
 						case 'getAll':
 							responseData = await getLeadNotes(this, leadId);
@@ -245,6 +260,84 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteNoteId = this.getNodeParameter('noteId', i) as string;
 							responseData = await deleteLeadNote(this, leadId, deleteNoteId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'dealActions') {
+					switch (operation) {
+						case 'move':
+							const idsString = this.getNodeParameter('ids', i) as string;
+							const ids = idsString.includes('[') ? JSON.parse(idsString) : idsString.split(',').map(id => id.trim());
+							const moveActionData = buildMoveActionData({
+								ids,
+								destinationStageId: this.getNodeParameter('destinationStageId', i) as string,
+								...this.getNodeParameter('additionalFields', i) as object,
+							});
+							responseData = await moveDealAction.call(this, moveActionData);
+							break;
+
+						case 'win':
+							const winIdsString = this.getNodeParameter('ids', i) as string;
+							const winIds = winIdsString.includes('[') ? JSON.parse(winIdsString) : winIdsString.split(',').map(id => id.trim());
+							const winActionData = buildWinActionData({
+								ids: winIds,
+								...this.getNodeParameter('additionalFields', i) as object,
+							});
+							responseData = await winDealAction.call(this, winActionData);
+							break;
+
+						case 'lose':
+							const loseIdsString = this.getNodeParameter('ids', i) as string;
+							const loseIds = loseIdsString.includes('[') ? JSON.parse(loseIdsString) : loseIdsString.split(',').map(id => id.trim());
+							const loseActionData = buildLoseActionData({
+								ids: loseIds,
+								lossReasonId: this.getNodeParameter('lossReasonId', i) as string,
+								justification: this.getNodeParameter('justification', i) as string,
+								...this.getNodeParameter('additionalFields', i) as object,
+							});
+							responseData = await loseDealAction.call(this, loseActionData);
+							break;
+
+						case 'restore':
+							const restoreIdsString = this.getNodeParameter('ids', i) as string;
+							const restoreIds = restoreIdsString.includes('[') ? JSON.parse(restoreIdsString) : restoreIdsString.split(',').map(id => id.trim());
+							const restoreActionData = buildRestoreActionData({
+								ids: restoreIds,
+								...this.getNodeParameter('additionalFields', i) as object,
+							});
+							responseData = await restoreDealAction.call(this, restoreActionData);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'pipelines') {
+					switch (operation) {
+						case 'getAll':
+							const take = this.getNodeParameter('limit', i, 500) as number;
+							const skip = this.getNodeParameter('skip', i, 0) as number;
+							const search = this.getNodeParameter('search', i, '') as string;
+
+							const queryParams = buildPipelineQueryParams(
+								take,
+								skip,
+								search || undefined
+							);
+
+							responseData = await getAllPipelines.call(this, queryParams);
+							break;
+
+						case 'getStages':
+							const pipelineId = this.getNodeParameter('pipelineId', i) as string;
+							responseData = await getPipelineStages.call(this, pipelineId);
 							break;
 
 						default:

@@ -6,10 +6,12 @@ export async function request(
 	endpoint: string,
 	body?: any,
 	queryParams?: any,
+	baseUrl?: string,
 ): Promise<any> {
 	const credentials = await context.getCredentials('dataCrazyCredentials');
 
-	let url = `https://api.datacrazy.io/v1/api/api/v1${endpoint}`;
+	let url = baseUrl || `https://api.datacrazy.io/v1/api/api/v1`;
+	url += endpoint;
 
 	// Add query parameters if provided
 	if (queryParams && Object.keys(queryParams).length > 0) {
