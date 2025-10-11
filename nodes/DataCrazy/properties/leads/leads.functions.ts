@@ -111,60 +111,62 @@ export function buildLeadQueryParams(options: any): any {
 		}
 	}
 
-	// Filtros avançados - usar formato flat com prefixo filter. (igual aos deals)
+	// Filtros avançados - usar formato de objeto aninhado para gerar filter[campo]
 	if (options.filters && Array.isArray(options.filters) && options.filters.length > 0) {
+		queryParams.filter = {};
+		
 		// Processar cada filtro individualmente
 		options.filters.forEach((filterItem: any) => {
 			if (filterItem.tags && filterItem.tags.trim()) {
-				queryParams['filter.tags'] = filterItem.tags.trim();
+				queryParams.filter.tags = filterItem.tags.trim();
 			}
 			if (filterItem.stages && filterItem.stages.trim()) {
-				queryParams['filter.stages'] = filterItem.stages.trim();
+				queryParams.filter.stages = filterItem.stages.trim();
 			}
 			if (filterItem.minLastPurchaseDate && filterItem.minLastPurchaseDate.trim()) {
-				queryParams['filter.minLastPurchaseDate'] = filterItem.minLastPurchaseDate.trim();
+				queryParams.filter.minLastPurchaseDate = filterItem.minLastPurchaseDate.trim();
 			}
 			if (filterItem.maxLastPurchaseDate && filterItem.maxLastPurchaseDate.trim()) {
-				queryParams['filter.maxLastPurchaseDate'] = filterItem.maxLastPurchaseDate.trim();
+				queryParams.filter.maxLastPurchaseDate = filterItem.maxLastPurchaseDate.trim();
 			}
 			if (filterItem.productsInBusiness !== undefined && filterItem.productsInBusiness !== null) {
-				queryParams['filter.productsInBusiness'] = filterItem.productsInBusiness;
+				queryParams.filter.productsInBusiness = filterItem.productsInBusiness;
 			}
 			if (filterItem.minBusinessesCount !== undefined && filterItem.minBusinessesCount !== null) {
-				queryParams['filter.minBusinessesCount'] = filterItem.minBusinessesCount;
+				queryParams.filter.minBusinessesCount = filterItem.minBusinessesCount;
 			}
 			if (filterItem.maxBusinessesCount !== undefined && filterItem.maxBusinessesCount !== null) {
-				queryParams['filter.maxBusinessesCount'] = filterItem.maxBusinessesCount;
+				queryParams.filter.maxBusinessesCount = filterItem.maxBusinessesCount;
 			}
 			if (filterItem.lists && filterItem.lists.trim()) {
-				queryParams['filter.lists'] = filterItem.lists.trim();
+				queryParams.filter.lists = filterItem.lists.trim();
 			}
 			if (filterItem.hasMessages !== undefined && filterItem.hasMessages !== null) {
-				queryParams['filter.hasMessages'] = filterItem.hasMessages;
+				queryParams.filter.hasMessages = filterItem.hasMessages;
 			}
 			if (filterItem.notHasMessages !== undefined && filterItem.notHasMessages !== null) {
-				queryParams['filter.notHasMessages'] = filterItem.notHasMessages;
+				queryParams.filter.notHasMessages = filterItem.notHasMessages;
 			}
 			if (filterItem.source && filterItem.source.trim()) {
-				queryParams['filter.source'] = filterItem.source.trim();
+				queryParams.filter.source = filterItem.source.trim();
 			}
 			if (filterItem.products && filterItem.products.trim()) {
-				queryParams['filter.products'] = filterItem.products.trim();
+				queryParams.filter.products = filterItem.products.trim();
 			}
 			if (filterItem.attendant && filterItem.attendant.trim()) {
-				queryParams['filter.attendant'] = filterItem.attendant.trim();
+				queryParams.filter.attendant = filterItem.attendant.trim();
 			}
 			if (filterItem.fields && filterItem.fields.trim()) {
-				queryParams['filter.fields'] = filterItem.fields.trim();
+				queryParams.filter.fields = filterItem.fields.trim();
 			}
 			if (filterItem.createdAtGreaterOrEqual && filterItem.createdAtGreaterOrEqual.trim()) {
-				queryParams['filter.createdAtGreaterOrEqual'] = filterItem.createdAtGreaterOrEqual.trim();
+				queryParams.filter.createdAtGreaterOrEqual = filterItem.createdAtGreaterOrEqual.trim();
 			}
 			if (filterItem.createdAtLessOrEqual && filterItem.createdAtLessOrEqual.trim()) {
-				queryParams['filter.createdAtLessOrEqual'] = filterItem.createdAtLessOrEqual.trim();
+				queryParams.filter.createdAtLessOrEqual = filterItem.createdAtLessOrEqual.trim();
 			}
 			if (filterItem.address && filterItem.address.trim()) {
-				queryParams['filter.address'] = filterItem.address.trim();
+				queryParams.filter.address = filterItem.address.trim();
 			}
 		});
 	}
