@@ -6,7 +6,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-import { dataCrazyNodeProperties } from '.';
+import { dataCrazyNodeProperties } from './properties';
 import {
 	getAllLeads,
 	createLead,
@@ -15,7 +15,7 @@ import {
 	deleteLead,
 	buildLeadData,
 	buildLeadQueryParams,
-} from './leads';
+} from './properties/leads';
 import {
 	getAllDeals,
 	createDeal,
@@ -24,7 +24,7 @@ import {
 	deleteDeal,
 	buildDealData,
 	buildDealQueryParams,
-} from './deals';
+} from './properties/deals';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
