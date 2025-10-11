@@ -274,9 +274,12 @@ const leadsFields: INodeProperties[] = [
 							{
 								displayName: 'ID do Atendente',
 								name: 'id',
-								type: 'string',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getAttendants',
+								},
 								default: '',
-								description: 'ID único do atendente responsável',
+								description: 'Selecione o atendente responsável',
 							},
 						],
 					},
@@ -501,9 +504,12 @@ const leadsFields: INodeProperties[] = [
 					{
 						displayName: 'Atendente',
 						name: 'attendant',
-						type: 'string',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getAttendants',
+						},
 						default: '',
-						description: 'ID de atendente. Ex: "849fefab-e697-4720-9303-e788c23790cc"',
+						description: 'Selecione o atendente para filtrar',
 					},
 					{
 						displayName: 'Campos Personalizados',

@@ -70,7 +70,10 @@ const dealsFields: INodeProperties[] = [
 	{
 		displayName: 'ID do Atendente',
 		name: 'attendantId',
-		type: 'string',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getAttendants',
+		},
 		required: false,
 		displayOptions: {
 			show: {
@@ -79,7 +82,7 @@ const dealsFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'ID do atendente responsável pelo negócio',
+		description: 'Selecione o atendente responsável pelo negócio',
 	},
 
 	// Additional Fields Collection
@@ -224,9 +227,12 @@ const dealsFields: INodeProperties[] = [
 					{
 						displayName: 'Atendentes',
 						name: 'attendants',
-						type: 'string',
-						default: '',
-						description: 'ID ou lista de IDs de atendentes separados por vírgula. Ex: "9e008d34-86d2-49fd-90af-34a9f9b29896"',
+						type: 'multiOptions',
+						typeOptions: {
+							loadOptionsMethod: 'getAttendants',
+						},
+						default: [],
+						description: 'Selecione os atendentes para filtrar',
 					},
 					{
 						displayName: 'Campos do Lead',

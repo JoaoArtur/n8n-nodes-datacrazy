@@ -74,6 +74,9 @@ import {
 	getBusinessLossReasonsForLoadOptions,
 } from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
+import {
+	getAttendantsForLoadOptions,
+} from './properties/attendants-crm';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -227,6 +230,21 @@ export class DataCrazy implements INodeType {
 					throw new NodeOperationError(
 						this.getNode(),
 						`Erro ao carregar tags: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getAttendants(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					// Chamar a função getAttendantsForLoadOptions
+					const attendantsResponse = await getAttendantsForLoadOptions(this);
+
+					// A função já retorna no formato correto para n8n
+					return attendantsResponse;
+				} catch (error) {
+					console.error('Erro ao carregar atendentes:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar atendentes: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
 					);
 				}
 			},
