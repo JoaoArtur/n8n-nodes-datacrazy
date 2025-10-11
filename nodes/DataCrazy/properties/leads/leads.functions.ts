@@ -96,8 +96,8 @@ export function buildLeadData(parameters: any): ILead {
 }
 
 // Helper function to build query parameters for getAll operation
-export function buildLeadQueryParams(options: any): ILeadQueryParams {
-	const queryParams: ILeadQueryParams = {};
+export function buildLeadQueryParams(options: any): any {
+	const queryParams: any = {};
 
 	// Parâmetros básicos
 	if (options.skip !== undefined) queryParams.skip = options.skip;
@@ -106,34 +106,67 @@ export function buildLeadQueryParams(options: any): ILeadQueryParams {
 
 	// Opções de complete
 	if (options.complete?.completeOptions) {
-		queryParams.complete = {};
 		if (options.complete.completeOptions.additionalFields !== undefined) {
-			queryParams.complete.additionalFields = options.complete.completeOptions.additionalFields;
+			queryParams['complete[additionalFields]'] = options.complete.completeOptions.additionalFields;
 		}
 	}
 
-	// Filtros avançados - acessar através de filterOptions
-	if (options.filter?.filterOptions) {
-		const filterData = options.filter.filterOptions;
-		queryParams.filter = {};
-		
-		if (filterData.tags) queryParams.filter.tags = filterData.tags;
-		if (filterData.stages) queryParams.filter.stages = filterData.stages;
-		if (filterData.minLastPurchaseDate) queryParams.filter.minLastPurchaseDate = filterData.minLastPurchaseDate;
-		if (filterData.maxLastPurchaseDate) queryParams.filter.maxLastPurchaseDate = filterData.maxLastPurchaseDate;
-		if (filterData.productsInBusiness !== undefined) queryParams.filter.productsInBusiness = filterData.productsInBusiness;
-		if (filterData.minBusinessesCount !== undefined) queryParams.filter.minBusinessesCount = filterData.minBusinessesCount;
-		if (filterData.maxBusinessesCount !== undefined) queryParams.filter.maxBusinessesCount = filterData.maxBusinessesCount;
-		if (filterData.lists) queryParams.filter.lists = filterData.lists;
-		if (filterData.hasMessages !== undefined) queryParams.filter.hasMessages = filterData.hasMessages;
-		if (filterData.notHasMessages !== undefined) queryParams.filter.notHasMessages = filterData.notHasMessages;
-		if (filterData.source) queryParams.filter.source = filterData.source;
-		if (filterData.products) queryParams.filter.products = filterData.products;
-		if (filterData.attendant) queryParams.filter.attendant = filterData.attendant;
-		if (filterData.fields) queryParams.filter.fields = filterData.fields;
-		if (filterData.createdAtGreaterOrEqual) queryParams.filter.createdAtGreaterOrEqual = filterData.createdAtGreaterOrEqual;
-		if (filterData.createdAtLessOrEqual) queryParams.filter.createdAtLessOrEqual = filterData.createdAtLessOrEqual;
-		if (filterData.address) queryParams.filter.address = filterData.address;
+	// Filtros avançados - usar formato flat com prefixo filter. (igual aos deals)
+	if (options.filters && Array.isArray(options.filters) && options.filters.length > 0) {
+		// Processar cada filtro individualmente
+		options.filters.forEach((filterItem: any) => {
+			if (filterItem.tags && filterItem.tags.trim()) {
+				queryParams['filter.tags'] = filterItem.tags.trim();
+			}
+			if (filterItem.stages && filterItem.stages.trim()) {
+				queryParams['filter.stages'] = filterItem.stages.trim();
+			}
+			if (filterItem.minLastPurchaseDate && filterItem.minLastPurchaseDate.trim()) {
+				queryParams['filter.minLastPurchaseDate'] = filterItem.minLastPurchaseDate.trim();
+			}
+			if (filterItem.maxLastPurchaseDate && filterItem.maxLastPurchaseDate.trim()) {
+				queryParams['filter.maxLastPurchaseDate'] = filterItem.maxLastPurchaseDate.trim();
+			}
+			if (filterItem.productsInBusiness !== undefined && filterItem.productsInBusiness !== null) {
+				queryParams['filter.productsInBusiness'] = filterItem.productsInBusiness;
+			}
+			if (filterItem.minBusinessesCount !== undefined && filterItem.minBusinessesCount !== null) {
+				queryParams['filter.minBusinessesCount'] = filterItem.minBusinessesCount;
+			}
+			if (filterItem.maxBusinessesCount !== undefined && filterItem.maxBusinessesCount !== null) {
+				queryParams['filter.maxBusinessesCount'] = filterItem.maxBusinessesCount;
+			}
+			if (filterItem.lists && filterItem.lists.trim()) {
+				queryParams['filter.lists'] = filterItem.lists.trim();
+			}
+			if (filterItem.hasMessages !== undefined && filterItem.hasMessages !== null) {
+				queryParams['filter.hasMessages'] = filterItem.hasMessages;
+			}
+			if (filterItem.notHasMessages !== undefined && filterItem.notHasMessages !== null) {
+				queryParams['filter.notHasMessages'] = filterItem.notHasMessages;
+			}
+			if (filterItem.source && filterItem.source.trim()) {
+				queryParams['filter.source'] = filterItem.source.trim();
+			}
+			if (filterItem.products && filterItem.products.trim()) {
+				queryParams['filter.products'] = filterItem.products.trim();
+			}
+			if (filterItem.attendant && filterItem.attendant.trim()) {
+				queryParams['filter.attendant'] = filterItem.attendant.trim();
+			}
+			if (filterItem.fields && filterItem.fields.trim()) {
+				queryParams['filter.fields'] = filterItem.fields.trim();
+			}
+			if (filterItem.createdAtGreaterOrEqual && filterItem.createdAtGreaterOrEqual.trim()) {
+				queryParams['filter.createdAtGreaterOrEqual'] = filterItem.createdAtGreaterOrEqual.trim();
+			}
+			if (filterItem.createdAtLessOrEqual && filterItem.createdAtLessOrEqual.trim()) {
+				queryParams['filter.createdAtLessOrEqual'] = filterItem.createdAtLessOrEqual.trim();
+			}
+			if (filterItem.address && filterItem.address.trim()) {
+				queryParams['filter.address'] = filterItem.address.trim();
+			}
+		});
 	}
 
 	return queryParams;

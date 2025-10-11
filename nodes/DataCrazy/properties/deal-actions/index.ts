@@ -14,6 +14,7 @@ export { dealActionsOperations } from './deal-actions.operations';
 // Campos
 export { 
 	dealIds,
+	destinationPipelineId,
 	destinationStageId,
 	lossReasonId,
 	justification,

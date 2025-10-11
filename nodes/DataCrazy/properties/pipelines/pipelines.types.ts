@@ -4,12 +4,17 @@
 export interface IStage {
 	id: string;
 	name: string;
-	order: number;
-	color?: string;
-	isActive: boolean;
-	pipelineId: string;
+	color: string;
+	index: number;
 	createdAt: string;
-	updatedAt: string;
+}
+
+/**
+ * Interface para resposta da API de estágios
+ */
+export interface IStagesResponse {
+	count: number;
+	data: IStage[];
 }
 
 /**

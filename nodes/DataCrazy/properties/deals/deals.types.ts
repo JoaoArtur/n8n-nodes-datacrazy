@@ -8,6 +8,7 @@
 export interface IDeal {
 	id?: string;
 	leadId: string;
+	pipelineId?: string;
 	stageId: string;
 	attendantId: string;
 	externalId?: string;
@@ -53,6 +54,7 @@ export interface IDealQueryParams {
  */
 export interface ICreateDealData {
 	leadId: string;
+	pipelineId?: string;
 	stageId: string;
 	attendantId: string;
 	externalId?: string;
@@ -63,6 +65,7 @@ export interface ICreateDealData {
  */
 export interface IUpdateDealData {
 	leadId?: string;
+	pipelineId?: string;
 	stageId?: string;
 	attendantId?: string;
 	externalId?: string;

@@ -87,6 +87,10 @@ export function buildDealData(dealData: ICreateDealData | IUpdateDealData): any 
 		data.leadId = dealData.leadId;
 	}
 
+	if (dealData.pipelineId !== undefined) {
+		data.pipelineId = dealData.pipelineId;
+	}
+
 	if (dealData.stageId !== undefined) {
 		data.stageId = dealData.stageId;
 	}

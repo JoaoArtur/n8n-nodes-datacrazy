@@ -46,6 +46,7 @@ export async function restoreDealAction(this: IExecuteFunctions, actionData: IDe
 export function buildMoveActionData(data: any): IDealActionMove {
 	return {
 		ids: Array.isArray(data.ids) ? data.ids : [data.ids],
+		destinationPipelineId: data.destinationPipelineId,
 		destinationStageId: data.destinationStageId,
 	};
 }

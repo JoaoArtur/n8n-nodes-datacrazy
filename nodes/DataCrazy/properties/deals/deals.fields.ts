@@ -33,9 +33,12 @@ const dealsFields: INodeProperties[] = [
 		description: 'ID do lead associado ao negócio',
 	},
 	{
-		displayName: 'ID do Estágio',
-		name: 'stageId',
-		type: 'string',
+		displayName: 'Pipeline',
+		name: 'pipelineId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getPipelines',
+		},
 		required: true,
 		displayOptions: {
 			show: {
@@ -44,7 +47,25 @@ const dealsFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'ID do estágio do funil de vendas',
+		description: 'Selecione o pipeline do funil de vendas',
+	},
+	{
+		displayName: 'Estágio',
+		name: 'stageId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getStages',
+			loadOptionsDependsOn: ['pipelineId'],
+		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['deals'],
+				operation: ['create', 'update'],
+			},
+		},
+		default: '',
+		description: 'Selecione o estágio do funil de vendas',
 	},
 	{
 		displayName: 'ID do Atendente',

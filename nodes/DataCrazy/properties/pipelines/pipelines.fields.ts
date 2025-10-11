@@ -44,17 +44,18 @@ export const pipelineSearch: INodeProperties = {
 };
 
 export const pipelineId: INodeProperties = {
-	displayName: 'Pipeline ID',
+	displayName: 'Pipeline',
 	name: 'pipelineId',
-	type: 'string',
+	type: 'options',
+	typeOptions: {
+		loadOptionsMethod: 'getPipelines',
+	},
 	required: true,
-	default: '',
-	placeholder: 'Digite o ID do pipeline',
-	description: 'ID do pipeline para listar os estágios',
 	displayOptions: {
 		show: {
-			resource: ['pipelines'],
 			operation: ['getStages'],
 		},
 	},
+	default: '',
+	description: 'Selecione o pipeline para listar os estágios',
 };

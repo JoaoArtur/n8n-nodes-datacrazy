@@ -1,6 +1,9 @@
 import {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodeListSearchResult,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeOperationError,
@@ -63,13 +66,19 @@ import {
 	getAllPipelines,
 	buildPipelineQueryParams,
 	getPipelineStages,
+	getPipelineStagesForLoadOptions,
 } from './properties/pipelines';
+import type { IStage } from './properties/pipelines/pipelines.types';
+import {
+	getBusinessLossReasonsForLoadOptions,
+} from './properties/business-loss-reasons';
+import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'DataCrazy',
 		name: 'dataCrazy',
-		icon: 'file:logo.svg',
+		icon: { light: 'file:logo.svg', dark: 'file:logo-white.svg' },
 		group: ['transform'],
 		version: 1,
 		description: 'Interagir com DataCrazy API para gerenciamento de leads, negócios e CRM',
@@ -85,6 +94,110 @@ export class DataCrazy implements INodeType {
 			},
 		],
 		properties: dataCrazyNodeProperties,
+	};
+
+	methods = {
+		loadOptions: {
+			async getPipelines(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					// Criar parâmetros de query padrão para buscar todos os pipelines
+					const queryParams = buildPipelineQueryParams(500, 0, '');
+
+					// Chamar a função getAllPipelines usando IExecuteFunctions
+					const executeFunctions = this as unknown as IExecuteFunctions;
+					const response = await getAllPipelines.call(executeFunctions, queryParams);
+
+					// Extrair os dados do response e mapear para o formato esperado pelo n8n
+					const pipelines = response.data || [];
+
+					return pipelines.map((pipeline: any) => ({
+						name: pipeline.name,
+						value: pipeline.id,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar pipelines: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					// Obter o pipelineId usando null coalesce - primeiro tenta 'destinationPipelineId' (deal-actions), depois 'pipelineId' (deals)
+					const pipelineId = (this.getCurrentNodeParameter('destinationPipelineId') as string) ||
+					                   (this.getCurrentNodeParameter('pipelineId') as string) ||
+					                   '';
+
+					if (!pipelineId) {
+						return [];
+					}
+
+					// Chamar a função getPipelineStagesForLoadOptions
+					const stagesResponse = await getPipelineStagesForLoadOptions.call(this, pipelineId);
+
+					// A API retorna um objeto IStagesResponse: { count: number, data: IStage[] }
+					// Extrair o array de estágios da resposta
+					let stages: IStage[] = [];
+
+					// Verificar se a resposta tem a estrutura esperada
+					if (stagesResponse && stagesResponse.data && Array.isArray(stagesResponse.data)) {
+						stages = stagesResponse.data;
+					} else {
+						console.error('Estrutura inesperada da resposta de stages:', stagesResponse);
+						return [];
+					}
+
+					// Mapear os estágios para o formato esperado pelo n8n
+					const mappedStages = stages.map((stage: IStage) => ({
+						name: stage.name,
+						value: stage.id,
+					}));
+
+					return mappedStages;
+				} catch (error) {
+					console.error('Erro ao carregar estágios:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar estágios: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getLossReasons(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					// Chamar a função getBusinessLossReasonsForLoadOptions
+					const lossReasonsResponse = await getBusinessLossReasonsForLoadOptions.call(this);
+
+					// A resposta da API retorna diretamente um objeto com 'count' e 'data'
+					// Extrair o array de motivos de perda da resposta
+					let lossReasons: IBusinessLossReason[] = [];
+
+					// Verificar se a resposta tem a estrutura esperada
+					if (lossReasonsResponse && lossReasonsResponse.data && Array.isArray(lossReasonsResponse.data)) {
+						lossReasons = lossReasonsResponse.data;
+					} else if (lossReasonsResponse && Array.isArray(lossReasonsResponse)) {
+						// Caso a resposta seja diretamente um array (fallback)
+						lossReasons = lossReasonsResponse;
+					} else {
+						// Log para debug - remover em produção
+						console.log('Estrutura inesperada da resposta de motivos de perda:', JSON.stringify(lossReasonsResponse, null, 2));
+						return [];
+					}
+
+					// Mapear os motivos de perda para o formato esperado pelo n8n
+					return lossReasons.map((reason: IBusinessLossReason) => ({
+						name: reason.name,
+						value: reason.id,
+					}));
+				} catch (error) {
+					// Log para debug - remover em produção
+					console.error('Erro ao carregar motivos de perda:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar motivos de perda: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -171,6 +284,7 @@ export class DataCrazy implements INodeType {
 						case 'create':
 							const createDealData = buildDealData({
 								leadId: this.getNodeParameter('leadId', i) as string,
+								pipelineId: this.getNodeParameter('pipelineId', i) as string,
 								stageId: this.getNodeParameter('stageId', i) as string,
 								attendantId: this.getNodeParameter('attendantId', i) as string,
 								...this.getNodeParameter('additionalFields', i, {}) as any,
@@ -187,6 +301,7 @@ export class DataCrazy implements INodeType {
 							const updateDealId = this.getNodeParameter('dealId', i) as string;
 							const updateDealData = buildDealData({
 								leadId: this.getNodeParameter('leadId', i) as string,
+								pipelineId: this.getNodeParameter('pipelineId', i) as string,
 								stageId: this.getNodeParameter('stageId', i) as string,
 								attendantId: this.getNodeParameter('attendantId', i) as string,
 								...this.getNodeParameter('additionalFields', i, {}) as any,
@@ -217,7 +332,7 @@ export class DataCrazy implements INodeType {
 							const attachmentData = buildAttachmentData({
 								attachmentUrl: this.getNodeParameter('attachmentUrl', i) as string,
 								fileName: this.getNodeParameter('fileName', i) as string,
-								fileSize: this.getNodeParameter('fileSize', i) as string,
+								fileSize: this.getNodeParameter('fileSize', i) as number,
 								description: this.getNodeParameter('description', i, '') as string,
 							});
 							responseData = await createLeadAttachment(this, leadId, attachmentData);
@@ -275,6 +390,7 @@ export class DataCrazy implements INodeType {
 							const ids = idsString.includes('[') ? JSON.parse(idsString) : idsString.split(',').map(id => id.trim());
 							const moveActionData = buildMoveActionData({
 								ids,
+								destinationPipelineId: this.getNodeParameter('destinationPipelineId', i) as string,
 								destinationStageId: this.getNodeParameter('destinationStageId', i) as string,
 								...this.getNodeParameter('additionalFields', i) as object,
 							});

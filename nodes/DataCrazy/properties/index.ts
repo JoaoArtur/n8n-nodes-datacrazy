@@ -4,7 +4,7 @@ import { dealsFields, dealsOperations } from './deals';
 import { attachmentsFields, attachmentsOperations } from './attachments';
 import { annotationsFields, annotationsOperations } from './annotations';
 import { tagsFields, tagsOperations } from './tags';
-import { dealActionsOperations, dealIds, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
+import { dealActionsOperations, dealIds, destinationPipelineId, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
 import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
 const resourcesOptions: INodeProperties = {
@@ -59,6 +59,7 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	...tagsFields,
 	...dealActionsOperations,
 	dealIds,
+	destinationPipelineId,
 	destinationStageId,
 	lossReasonId,
 	justification,

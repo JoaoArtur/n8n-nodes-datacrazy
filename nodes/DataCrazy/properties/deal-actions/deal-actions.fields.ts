@@ -17,15 +17,17 @@ export const dealIds: INodeProperties = {
 	},
 };
 
-// Campo para ID do estágio de destino (operação move)
-export const destinationStageId: INodeProperties = {
-	displayName: 'ID do Estágio de Destino',
-	name: 'destinationStageId',
-	type: 'string',
+// Campo para seleção de pipeline (operação move)
+export const destinationPipelineId: INodeProperties = {
+	displayName: 'Pipeline de Destino',
+	name: 'destinationPipelineId',
+	type: 'options',
+	typeOptions: {
+		loadOptionsMethod: 'getPipelines',
+	},
 	required: true,
 	default: '',
-	placeholder: '8c2f62ea-0397-4cd7-92e0-5d4268d407ea',
-	description: 'ID do estágio para onde os negócios serão movidos',
+	description: 'Selecione o pipeline de destino',
 	displayOptions: {
 		show: {
 			resource: ['dealActions'],
@@ -34,15 +36,37 @@ export const destinationStageId: INodeProperties = {
 	},
 };
 
-// Campo para ID do motivo da perda (operação lose)
-export const lossReasonId: INodeProperties = {
-	displayName: 'ID do Motivo da Perda',
-	name: 'lossReasonId',
-	type: 'string',
+// Campo para seleção de estágio (operação move)
+export const destinationStageId: INodeProperties = {
+	displayName: 'Estágio de Destino',
+	name: 'destinationStageId',
+	type: 'options',
+	typeOptions: {
+		loadOptionsMethod: 'getStages',
+		loadOptionsDependsOn: ['destinationPipelineId'],
+	},
 	required: true,
 	default: '',
-	placeholder: '59e77f5f-7581-4f20-a05b-97cd33485019',
-	description: 'ID do motivo pelo qual os negócios foram perdidos',
+	description: 'Selecione o estágio de destino',
+	displayOptions: {
+		show: {
+			resource: ['dealActions'],
+			operation: ['move'],
+		},
+	},
+};
+
+// Campo para seleção de motivo de perda (operação lose)
+export const lossReasonId: INodeProperties = {
+	displayName: 'Motivo da Perda',
+	name: 'lossReasonId',
+	type: 'options',
+	typeOptions: {
+		loadOptionsMethod: 'getLossReasons',
+	},
+	required: true,
+	default: '',
+	description: 'Selecione o motivo pelo qual os negócios foram perdidos',
 	displayOptions: {
 		show: {
 			resource: ['dealActions'],
