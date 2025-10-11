@@ -70,13 +70,9 @@ import {
 	getPipelineStagesForLoadOptions,
 } from './properties/pipelines';
 import type { IStage } from './properties/pipelines/pipelines.types';
-import {
-	getBusinessLossReasonsForLoadOptions,
-} from './properties/business-loss-reasons';
+import { getBusinessLossReasonsForLoadOptions } from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
-import {
-	getAttendantsForLoadOptions,
-} from './properties/attendants-crm';
+import { getAttendantsForLoadOptions } from './properties/attendants-crm';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -97,6 +93,7 @@ export class DataCrazy implements INodeType {
 				required: true,
 			},
 		],
+		usableAsTool: true,
 		properties: dataCrazyNodeProperties,
 	};
 
@@ -111,13 +108,58 @@ export class DataCrazy implements INodeType {
 					const executeFunctions = this as unknown as IExecuteFunctions;
 					const response = await getAllPipelines.call(executeFunctions, queryParams);
 
-					// Extrair os dados do response e mapear para o formato esperado pelo n8n
+					// Extrair os dados do response
 					const pipelines = response.data || [];
 
-					return pipelines.map((pipeline: any) => ({
-						name: pipeline.name,
-						value: pipeline.id,
-					}));
+					// Agrupar pipelines por grupo
+					const groupedPipelines = pipelines.reduce(
+						(groups: { [key: string]: any[] }, pipeline: any) => {
+							const group = pipeline.group || 'Sem Grupo';
+							if (!groups[group]) {
+								groups[group] = [];
+							}
+							groups[group].push(pipeline);
+							return groups;
+						},
+						{},
+					);
+
+					// Criar lista de opções com separadores visuais
+					const options: INodePropertyOptions[] = [];
+
+					// Ordenar grupos alfabeticamente
+					const sortedGroups = Object.keys(groupedPipelines).sort();
+
+					sortedGroups.forEach((groupName, groupIndex) => {
+						// Adicionar separador visual para o grupo (exceto para o primeiro grupo)
+						if (groupIndex > 0) {
+							options.push({
+								name: '────────────────────────',
+								value: `separator_${groupIndex}`,
+							});
+						}
+
+						// Adicionar cabeçalho do grupo
+						options.push({
+							name: `📁 ${groupName}`,
+							value: `group_header_${groupName}`,
+						});
+
+						// Ordenar pipelines dentro do grupo alfabeticamente
+						const sortedPipelines = groupedPipelines[groupName].sort((a: any, b: any) =>
+							a.name.localeCompare(b.name),
+						);
+
+						// Adicionar pipelines do grupo
+						sortedPipelines.forEach((pipeline: any) => {
+							options.push({
+								name: `  └─ ${pipeline.name}`,
+								value: pipeline.id,
+							});
+						});
+					});
+
+					return options;
 				} catch (error) {
 					throw new NodeOperationError(
 						this.getNode(),
@@ -128,9 +170,10 @@ export class DataCrazy implements INodeType {
 			async getStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				try {
 					// Obter o pipelineId usando null coalesce - primeiro tenta 'destinationPipelineId' (deal-actions), depois 'pipelineId' (deals)
-					const pipelineId = (this.getCurrentNodeParameter('destinationPipelineId') as string) ||
-					                   (this.getCurrentNodeParameter('pipelineId') as string) ||
-					                   '';
+					const pipelineId =
+						(this.getCurrentNodeParameter('destinationPipelineId') as string) ||
+						(this.getCurrentNodeParameter('pipelineId') as string) ||
+						'';
 
 					if (!pipelineId) {
 						return [];
@@ -176,14 +219,21 @@ export class DataCrazy implements INodeType {
 					let lossReasons: IBusinessLossReason[] = [];
 
 					// Verificar se a resposta tem a estrutura esperada
-					if (lossReasonsResponse && lossReasonsResponse.data && Array.isArray(lossReasonsResponse.data)) {
+					if (
+						lossReasonsResponse &&
+						lossReasonsResponse.data &&
+						Array.isArray(lossReasonsResponse.data)
+					) {
 						lossReasons = lossReasonsResponse.data;
 					} else if (lossReasonsResponse && Array.isArray(lossReasonsResponse)) {
 						// Caso a resposta seja diretamente um array (fallback)
 						lossReasons = lossReasonsResponse;
 					} else {
 						// Log para debug - remover em produção
-						console.log('Estrutura inesperada da resposta de motivos de perda:', JSON.stringify(lossReasonsResponse, null, 2));
+						console.log(
+							'Estrutura inesperada da resposta de motivos de perda:',
+							JSON.stringify(lossReasonsResponse, null, 2),
+						);
 						return [];
 					}
 
@@ -338,7 +388,7 @@ export class DataCrazy implements INodeType {
 								pipelineId: this.getNodeParameter('pipelineId', i) as string,
 								stageId: this.getNodeParameter('stageId', i) as string,
 								attendantId: this.getNodeParameter('attendantId', i) as string,
-								...this.getNodeParameter('additionalFields', i, {}) as any,
+								...(this.getNodeParameter('additionalFields', i, {}) as any),
 							});
 							responseData = await createDeal.call(this, createDealData);
 							break;
@@ -355,7 +405,7 @@ export class DataCrazy implements INodeType {
 								pipelineId: this.getNodeParameter('pipelineId', i) as string,
 								stageId: this.getNodeParameter('stageId', i) as string,
 								attendantId: this.getNodeParameter('attendantId', i) as string,
-								...this.getNodeParameter('additionalFields', i, {}) as any,
+								...(this.getNodeParameter('additionalFields', i, {}) as any),
 							});
 							responseData = await updateDeal.call(this, updateDealId, updateDealData);
 							break;
@@ -438,44 +488,52 @@ export class DataCrazy implements INodeType {
 					switch (operation) {
 						case 'move':
 							const idsString = this.getNodeParameter('ids', i) as string;
-							const ids = idsString.includes('[') ? JSON.parse(idsString) : idsString.split(',').map(id => id.trim());
+							const ids = idsString.includes('[')
+								? JSON.parse(idsString)
+								: idsString.split(',').map((id) => id.trim());
 							const moveActionData = buildMoveActionData({
 								ids,
 								destinationPipelineId: this.getNodeParameter('destinationPipelineId', i) as string,
 								destinationStageId: this.getNodeParameter('destinationStageId', i) as string,
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							});
 							responseData = await moveDealAction.call(this, moveActionData);
 							break;
 
 						case 'win':
 							const winIdsString = this.getNodeParameter('ids', i) as string;
-							const winIds = winIdsString.includes('[') ? JSON.parse(winIdsString) : winIdsString.split(',').map(id => id.trim());
+							const winIds = winIdsString.includes('[')
+								? JSON.parse(winIdsString)
+								: winIdsString.split(',').map((id) => id.trim());
 							const winActionData = buildWinActionData({
 								ids: winIds,
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							});
 							responseData = await winDealAction.call(this, winActionData);
 							break;
 
 						case 'lose':
 							const loseIdsString = this.getNodeParameter('ids', i) as string;
-							const loseIds = loseIdsString.includes('[') ? JSON.parse(loseIdsString) : loseIdsString.split(',').map(id => id.trim());
+							const loseIds = loseIdsString.includes('[')
+								? JSON.parse(loseIdsString)
+								: loseIdsString.split(',').map((id) => id.trim());
 							const loseActionData = buildLoseActionData({
 								ids: loseIds,
 								lossReasonId: this.getNodeParameter('lossReasonId', i) as string,
 								justification: this.getNodeParameter('justification', i) as string,
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							});
 							responseData = await loseDealAction.call(this, loseActionData);
 							break;
 
 						case 'restore':
 							const restoreIdsString = this.getNodeParameter('ids', i) as string;
-							const restoreIds = restoreIdsString.includes('[') ? JSON.parse(restoreIdsString) : restoreIdsString.split(',').map(id => id.trim());
+							const restoreIds = restoreIdsString.includes('[')
+								? JSON.parse(restoreIdsString)
+								: restoreIdsString.split(',').map((id) => id.trim());
 							const restoreActionData = buildRestoreActionData({
 								ids: restoreIds,
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							});
 							responseData = await restoreDealAction.call(this, restoreActionData);
 							break;
@@ -493,11 +551,7 @@ export class DataCrazy implements INodeType {
 							const skip = this.getNodeParameter('skip', i, 0) as number;
 							const search = this.getNodeParameter('search', i, '') as string;
 
-							const queryParams = buildPipelineQueryParams(
-								take,
-								skip,
-								search || undefined
-							);
+							const queryParams = buildPipelineQueryParams(take, skip, search || undefined);
 
 							responseData = await getAllPipelines.call(this, queryParams);
 							break;
@@ -523,7 +577,7 @@ export class DataCrazy implements INodeType {
 							const createTagData = buildTagData({
 								name: this.getNodeParameter('name', i) as string,
 								color: this.getNodeParameter('color', i) as string,
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							}) as any;
 							responseData = await createTag.call(this, createTagData);
 							break;
@@ -536,7 +590,7 @@ export class DataCrazy implements INodeType {
 						case 'update':
 							const updateTagId = this.getNodeParameter('tagId', i) as string;
 							const updateTagData = buildTagData({
-								...this.getNodeParameter('additionalFields', i) as object,
+								...(this.getNodeParameter('additionalFields', i) as object),
 							});
 							responseData = await updateTag.call(this, updateTagId, updateTagData);
 							break;
