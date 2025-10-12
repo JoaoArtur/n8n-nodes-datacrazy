@@ -233,8 +233,34 @@ export async function getLeadActivities(
 export async function getLeadHistory(
 	context: IExecuteFunctions,
 	leadId: string,
+	queryParams?: {
+		take?: number;
+		skip?: number;
+		types?: string;
+	}
 ): Promise<any> {
-	return await request(context, 'GET', `/leads/${leadId}/history`);
+	// Parâmetros padrão baseados na URL fornecida
+	const defaultParams = {
+		take: 10,
+		skip: 0,
+		url: '/history',
+		filter: {
+			types: queryParams?.types || '',
+			leadId: leadId
+		}
+	};
+
+	// Mesclar com parâmetros fornecidos
+	const finalParams = {
+		...defaultParams,
+		...(queryParams?.take !== undefined && { take: queryParams.take }),
+		...(queryParams?.skip !== undefined && { skip: queryParams.skip }),
+	};
+
+	// Usar a nova base URL específica para histórico
+	const baseUrl = 'https://crm.g1.datacrazy.io/api/crm';
+	
+	return await request(context, 'GET', '/history', undefined, finalParams, baseUrl);
 }
 
 export async function getLeadBusinesses(

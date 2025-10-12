@@ -22,7 +22,6 @@ const leadsFields: INodeProperties[] = [
 		displayName: 'Nome',
 		name: 'name',
 		type: 'string',
-		required: true,
 		displayOptions: {
 			show: {
 				resource: ['leads'],
