@@ -54,6 +54,13 @@ import {
 	getTagsForLoadOptions,
 } from './properties/tags';
 import {
+	getAllConversations,
+	getConversationById,
+	sendMessage,
+	buildConversationQueryParams,
+	buildMessageData,
+} from './properties/conversations';
+import {
 	moveDealAction,
 	winDealAction,
 	loseDealAction,
@@ -598,6 +605,33 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteTagId = this.getNodeParameter('tagId', i) as string;
 							responseData = await deleteTag.call(this, deleteTagId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'conversations') {
+					switch (operation) {
+						case 'getAll':
+							const conversationQueryParams = buildConversationQueryParams(this.getNodeParameter('options', i, {}));
+							responseData = await getAllConversations(this, conversationQueryParams);
+							break;
+
+						case 'get':
+							const conversationId = this.getNodeParameter('conversationId', i) as string;
+							responseData = await getConversationById(this, conversationId);
+							break;
+
+						case 'sendMessage':
+							const messageConversationId = this.getNodeParameter('conversationId', i) as string;
+							const messageData = buildMessageData({
+								body: this.getNodeParameter('body', i) as string,
+								additionalFields: this.getNodeParameter('additionalFields', i, {}) as any,
+							});
+							responseData = await sendMessage(this, messageConversationId, messageData);
 							break;
 
 						default:
