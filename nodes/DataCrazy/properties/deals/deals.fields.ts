@@ -165,50 +165,12 @@ const dealsFields: INodeProperties[] = [
 					{
 						displayName: 'Tags',
 						name: 'tags',
-						type: 'fixedCollection',
-						default: {},
+						type: 'multiOptions',
 						typeOptions: {
-							multipleValues: false,
+							loadOptionsMethod: 'getTags',
 						},
-						options: [
-							{
-								name: 'tagFilter',
-								displayName: 'Filtro de Tags',
-								values: [
-									{
-										displayName: 'Operação',
-										name: 'operation',
-										type: 'options',
-										options: [
-											{
-												name: 'Alguma das tags (some)',
-												value: 'some',
-											},
-											{
-												name: 'Todas as tags (every)',
-												value: 'every',
-											},
-											{
-												name: 'Nenhuma das tags (none)',
-												value: 'none',
-											},
-										],
-										default: 'some',
-										description: 'Operação a ser aplicada na filtragem de tags',
-									},
-									{
-										displayName: 'Tags',
-										name: 'tagIds',
-										type: 'multiOptions',
-										typeOptions: {
-											loadOptionsMethod: 'getTags',
-										},
-										default: [],
-										description: 'Selecione as tags para filtrar',
-									},
-								],
-							},
-						],
+						default: [],
+						description: 'Selecione as tags para filtrar',
 					},
 					{
 						displayName: 'Motivo de Perda',

@@ -1,8 +1,31 @@
 // Conversation-specific interfaces and types
 
+// Tipos de mensagem suportados
+export type MessageType = 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO' | 'FILE';
+
+// Interface para anexos de mensagem
+export interface IMessageAttachment {
+	url: string;
+	type: MessageType;
+	fileName: string;
+	mimeType: string;
+	size?: number;
+	file?: any;
+	id?: string;
+}
+
+// Interface para compressão de arquivo
+export interface IFileCompression {
+	compressing: boolean;
+	progress: number;
+}
+
 export interface IConversationMessage {
 	id?: string;
-	body: string;
+	body?: string;
+	attachments?: IMessageAttachment[];
+	pendings?: any[];
+	fileCompression?: IFileCompression;
 	repliedMessageId?: string;
 	scheduledDate?: string;
 	isInternal?: boolean;
@@ -71,13 +94,25 @@ export interface IConversationQueryParams {
 	skip?: number;
 	take?: number;
 	search?: string;
-	filter?: IConversationFilterOptions;
-	[key: string]: any;
+	initialized?: boolean;
+	department?: string;
+	instanceId?: string | string[];
+	tags?: string | string[];
+	stages?: string;
+	attendant?: string;
 }
 
-// Interface para envio de mensagens
+// Interface para opções de envio de mensagem
 export interface ISendMessageOptions {
-	body: string;
+	messageType?: MessageType;
+	body?: string;
+	attachments?: IMessageAttachment[];
+	pendings?: any[];
+	fileCompression?: IFileCompression;
+	attachmentUrl?: string;
+	fileName?: string;
+	mimeType?: string;
+	fileSize?: number;
 	repliedMessageId?: string;
 	scheduledDate?: string;
 	isInternal?: boolean;

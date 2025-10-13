@@ -155,14 +155,9 @@ export function buildLeadQueryParams(options: any): any {
 		
 		// Processar cada filtro individualmente
 		options.filters.forEach((filterItem: any) => {
-			// Processar filtro de tags no novo formato
-			if (filterItem.tags && filterItem.tags.tagFilter) {
-				const tagFilter = filterItem.tags.tagFilter;
-				if (tagFilter.operation && tagFilter.tagIds && tagFilter.tagIds.length > 0) {
-					const operation = tagFilter.operation;
-					const tagIds = tagFilter.tagIds.join(',');
-					queryParams.filter.tags = `${operation} ${tagIds}`;
-				}
+			// Filtro de tags - usar diretamente as tags selecionadas
+			if (filterItem.tags && Array.isArray(filterItem.tags) && filterItem.tags.length > 0) {
+				queryParams.filter.tags = filterItem.tags.join(',');
 			}
 			if (filterItem.stages && filterItem.stages.trim()) {
 				queryParams.filter.stages = filterItem.stages.trim();

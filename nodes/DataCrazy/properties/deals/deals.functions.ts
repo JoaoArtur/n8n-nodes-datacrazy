@@ -177,14 +177,9 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 
 		// Processar cada filtro individualmente
 		queryParams.filters.forEach((filterItem: any) => {
-			// Processar filtro de tags no novo formato
-			if (filterItem.tags && filterItem.tags.tagFilter) {
-				const tagFilter = filterItem.tags.tagFilter;
-				if (tagFilter.operation && tagFilter.tagIds && tagFilter.tagIds.length > 0) {
-					const operation = tagFilter.operation;
-					const tagIds = tagFilter.tagIds.join(',');
-					qs.filter.tags = `${operation} ${tagIds}`;
-				}
+			// Filtro de tags - usar diretamente as tags selecionadas
+			if (filterItem.tags && Array.isArray(filterItem.tags) && filterItem.tags.length > 0) {
+				qs.filter.tags = filterItem.tags.join(',');
 			}
 
 			if (filterItem.lossReason !== undefined && filterItem.lossReason.trim() !== '') {

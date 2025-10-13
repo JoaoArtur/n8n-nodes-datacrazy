@@ -19,9 +19,9 @@ const conversationsFields: INodeProperties[] = [
 
 	// Send Message Fields
 	{
-		displayName: 'Mensagem',
-		name: 'body',
-		type: 'string',
+		displayName: 'Tipo de Mensagem',
+		name: 'messageType',
+		type: 'options',
 		required: true,
 		displayOptions: {
 			show: {
@@ -29,8 +29,108 @@ const conversationsFields: INodeProperties[] = [
 				operation: ['sendMessage'],
 			},
 		},
+		options: [
+			{
+				name: 'Texto',
+				value: 'TEXT',
+			},
+			{
+				name: 'Imagem',
+				value: 'IMAGE',
+			},
+			{
+				name: 'Vídeo',
+				value: 'VIDEO',
+			},
+			{
+				name: 'Áudio',
+				value: 'AUDIO',
+			},
+			{
+				name: 'Documento',
+				value: 'FILE',
+			},
+		],
+		default: 'TEXT',
+		description: 'Tipo de mensagem a ser enviada',
+	},
+
+	{
+		displayName: 'Mensagem',
+		name: 'body',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['TEXT'],
+			},
+		},
 		default: '',
-		description: 'Conteúdo da mensagem a ser enviada',
+		description: 'Conteúdo da mensagem de texto',
+	},
+
+	{
+		displayName: 'URL do Arquivo',
+		name: 'attachmentUrl',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['IMAGE', 'VIDEO', 'AUDIO', 'FILE'],
+			},
+		},
+		default: '',
+		description: 'URL do arquivo a ser enviado',
+	},
+
+	{
+		displayName: 'Nome do Arquivo',
+		name: 'fileName',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['IMAGE', 'VIDEO', 'AUDIO', 'FILE'],
+			},
+		},
+		default: '',
+		description: 'Nome do arquivo com extensão',
+	},
+
+	{
+		displayName: 'Tamanho do Arquivo (bytes)',
+		name: 'fileSize',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['IMAGE', 'VIDEO', 'AUDIO', 'FILE'],
+			},
+		},
+		default: 0,
+		description: 'Tamanho do arquivo em bytes',
+	},
+
+	{
+		displayName: 'Texto da Mensagem (Opcional)',
+		name: 'body',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['IMAGE', 'VIDEO', 'FILE'],
+			},
+		},
+		default: '',
+		description: 'Texto adicional para acompanhar o arquivo (opcional)',
 	},
 
 	// Additional Fields for Send Message
@@ -114,6 +214,27 @@ const conversationsFields: INodeProperties[] = [
 				description: 'Termo de busca para filtrar conversas',
 			},
 			{
+				displayName: 'Pipeline',
+				name: 'pipeline',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getPipelines',
+				},
+				default: '',
+				description: 'Selecione o pipeline para filtrar por estágio',
+			},
+			{
+				displayName: 'Estágio',
+				name: 'stages',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getStages',
+					loadOptionsDependsOn: ['options.pipeline'],
+				},
+				default: '',
+				description: 'Selecione o estágio para filtrar (requer seleção de pipeline)',
+			},
+			{
 				displayName: 'Filtros Avançados',
 				name: 'filters',
 				type: 'collection',
@@ -135,40 +256,37 @@ const conversationsFields: INodeProperties[] = [
 						name: 'department',
 						type: 'string',
 						default: '',
-						description: 'ID do departamento. Este campo aceita um único ID de departamento',
-						placeholder: 'e3581d38-aeab-483a-8275-de32dce2388a',
+						description: 'Filtrar por departamento específico',
 					},
 					{
 						displayName: 'Instâncias',
 						name: 'instanceId',
-						type: 'string',
-						default: '',
-						description: 'ID ou Lista de IDs de instâncias. Este campo aceita um único ou uma lista de IDs separados por vírgula',
-						placeholder: '682f0a3823f2d4e36a2150c0,6808667d911e4c8975bc5405',
+						type: 'multiOptions',
+						typeOptions: {
+							loadOptionsMethod: 'getInstances',
+						},
+						default: [],
+						description: 'Selecione as instâncias para filtrar (valores serão unidos com vírgula)',
 					},
 					{
 						displayName: 'Tags',
 						name: 'tags',
-						type: 'string',
-						default: '',
-						description: 'ID ou lista de IDs de tags. Este campo aceita um ID ou uma lista de IDs de tags separados por vírgula',
-						placeholder: '849fefab-e697-4720-9303-e788c23790cc,9e008d34-86d2-49fd-90af-34a9f9b29896',
-					},
-					{
-						displayName: 'Estágios',
-						name: 'stages',
-						type: 'string',
-						default: '',
-						description: 'ID do stage. Este campo aceita um único ID, referente a um estágio de pipeline',
-						placeholder: '849fefab-e697-4720-9303-e788c23790cc',
+						type: 'multiOptions',
+						typeOptions: {
+							loadOptionsMethod: 'getTags',
+						},
+						default: [],
+						description: 'Selecione as tags para filtrar',
 					},
 					{
 						displayName: 'Atendente',
 						name: 'attendant',
-						type: 'string',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getAttendants',
+						},
 						default: '',
-						description: 'ID do atendente. Este campo aceita um único ID, referente a um atendente',
-						placeholder: '849fefab-e697-4720-9303-e788c23790cc',
+						description: 'Selecione o atendente para filtrar',
 					},
 				],
 			},

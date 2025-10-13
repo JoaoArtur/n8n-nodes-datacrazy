@@ -16,15 +16,18 @@ export async function request(
 	// Add query parameters if provided
 	if (queryParams && Object.keys(queryParams).length > 0) {
 		const searchParams = new URLSearchParams();
+
 		Object.keys(queryParams).forEach((key) => {
 			const value = queryParams[key];
+
 			if (value !== undefined && value !== null) {
-				// Tratar objetos aninhados (como filter[all]=true)
+				// Tratar objetos aninhados (como filter[campo]=valor)
 				if (typeof value === 'object' && !Array.isArray(value)) {
 					Object.keys(value).forEach((nestedKey) => {
 						const nestedValue = value[nestedKey];
 						if (nestedValue !== undefined && nestedValue !== null) {
-							searchParams.append(`${key}[${nestedKey}]`, nestedValue.toString());
+							const paramName = `${key}[${nestedKey}]`;
+							searchParams.append(paramName, nestedValue.toString());
 						}
 					});
 				} else {
@@ -32,8 +35,12 @@ export async function request(
 				}
 			}
 		});
-		url += `?${searchParams.toString()}`;
+
+		const queryString = searchParams.toString();
+		url += `?${queryString}`;
 	}
+
+	console.log('🚀 [DEBUG] URL final da requisição:', url);
 
 	const options: any = {
 		method,
@@ -49,7 +56,9 @@ export async function request(
 		options.body = body;
 	}
 
-	return await context.helpers.request(options);
+	const response = await context.helpers.request(options);
+
+	return response;
 }
 
 export async function requestForLoadOptions(
@@ -71,7 +80,7 @@ export async function requestForLoadOptions(
 		Object.keys(queryParams).forEach((key) => {
 			const value = queryParams[key];
 			if (value !== undefined && value !== null) {
-				// Tratar objetos aninhados (como filter[all]=true)
+				// Tratar objetos aninhados (como filter[campo]=valor)
 				if (typeof value === 'object' && !Array.isArray(value)) {
 					Object.keys(value).forEach((nestedKey) => {
 						const nestedValue = value[nestedKey];

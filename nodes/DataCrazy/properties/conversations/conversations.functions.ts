@@ -25,123 +25,307 @@ export async function sendMessage(
 	return await request(context, 'POST', `/conversations/${conversationId}/messages`, messageData);
 }
 
-// Helper function to build conversation query parameters
 export function buildConversationQueryParams(options: any): any {
+	console.log('🔍 [DEBUG] buildConversationQueryParams - Recebido options:', JSON.stringify(options, null, 2));
+	
 	const queryParams: any = {};
 
-	// Basic pagination and search
-	if (options.skip !== undefined) queryParams.skip = options.skip;
-	if (options.take !== undefined) queryParams.take = options.take;
-	if (options.search) queryParams.search = options.search;
+	// Extrair skip, take, search, pipeline, stages e filters do objeto options
+	const { skip, take, search, pipeline, stages, filters } = options;
+	
+	console.log('🔍 [DEBUG] Campos extraídos:', {
+		skip,
+		take,
+		search,
+		pipeline,
+		stages,
+		filters: filters ? `Array com ${filters.length} itens` : 'undefined'
+	});
 
-	// Advanced filters
-	if (options.filters && Array.isArray(options.filters)) {
-		const filter: any = {};
-
-		options.filters.forEach((filterItem: any) => {
-			// Conversas inicializadas
-			if (filterItem.initialized !== undefined) {
-				filter.initialized = filterItem.initialized;
-			}
-
-			// Departamento
-			if (filterItem.department) {
-				filter.department = filterItem.department;
-			}
-
-			// Instâncias (pode ser um ID único ou lista separada por vírgula)
-			if (filterItem.instanceId) {
-				filter.instanceId = filterItem.instanceId;
-			}
-
-			// Tags (pode ser um ID único ou lista separada por vírgula)
-			if (filterItem.tags) {
-				filter.tags = filterItem.tags;
-			}
-
-			// Estágios
-			if (filterItem.stages) {
-				filter.stages = filterItem.stages;
-			}
-
-			// Atendente
-			if (filterItem.attendant) {
-				filter.attendant = filterItem.attendant;
-			}
-		});
-
-		// Só adiciona o filtro se houver pelo menos uma propriedade
-		if (Object.keys(filter).length > 0) {
-			queryParams.filter = filter;
-		}
+	// Adicionar skip se fornecido
+	if (skip !== undefined && skip !== null) {
+		queryParams.skip = skip;
+		console.log('✅ [DEBUG] Adicionado skip:', skip);
 	}
 
+	// Adicionar take se fornecido
+	if (take !== undefined && take !== null) {
+		queryParams.take = take;
+		console.log('✅ [DEBUG] Adicionado take:', take);
+	}
+
+	// Adicionar search se fornecido
+	if (search !== undefined && search !== null && search !== '') {
+		queryParams.search = search;
+		console.log('✅ [DEBUG] Adicionado search:', search);
+	}
+
+	// Processar pipeline como filtro se fornecido
+	if (pipeline !== undefined && pipeline !== null && pipeline !== '') {
+		queryParams['filter[pipeline]'] = pipeline;
+		console.log('✅ [DEBUG] Adicionado filter[pipeline]:', pipeline);
+	}
+
+	// Processar stages como filtro se fornecido
+	if (stages !== undefined && stages !== null && stages !== '') {
+		queryParams['filter[stages]'] = stages;
+		console.log('✅ [DEBUG] Adicionado filter[stages]:', stages);
+	}
+
+	// Processar filtros avançados se fornecidos
+	if (filters && Array.isArray(filters) && filters.length > 0) {
+		console.log('🔍 [DEBUG] Processando filtros avançados:', filters);
+		filters.forEach((filterObject: any, index: number) => {
+			console.log(`🔍 [DEBUG] Processando objeto de filtro ${index}:`, filterObject);
+			
+			// O n8n envia os filtros como um objeto onde cada propriedade é um campo de filtro
+			// Em vez de { field: "tags", value: [...] }, recebemos { tags: [...], initialized: true, ... }
+			Object.keys(filterObject).forEach((fieldName: string) => {
+				const fieldValue = filterObject[fieldName];
+				console.log(`🔍 [DEBUG] Processando campo: ${fieldName} = ${fieldValue}`);
+				
+				if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
+					// Mapear campos para os nomes corretos da API
+					const fieldMap: { [key: string]: string } = {
+						initialized: 'initialized',
+						department: 'department',
+						instanceId: 'instanceId',
+						tags: 'tags',
+						attendant: 'attendant',
+					};
+
+					const apiField = fieldMap[fieldName] || fieldName;
+					console.log(`🔍 [DEBUG] Campo mapeado: ${fieldName} -> ${apiField}`);
+
+					// Processar valores baseado no tipo de campo
+					if (Array.isArray(fieldValue)) {
+						// Para arrays (tags, instanceId), juntar com vírgula
+						const joinedValue = fieldValue.join(',');
+						queryParams[`filter[${apiField}]`] = joinedValue;
+						console.log(`✅ [DEBUG] Adicionado filter[${apiField}] (array):`, joinedValue);
+					} else {
+						queryParams[`filter[${apiField}]`] = fieldValue;
+						console.log(`✅ [DEBUG] Adicionado filter[${apiField}]:`, fieldValue);
+					}
+				} else {
+					console.log(`⚠️ [DEBUG] Campo ${fieldName} ignorado - valor inválido:`, fieldValue);
+				}
+			});
+		});
+	} else {
+		console.log('ℹ️ [DEBUG] Nenhum filtro avançado fornecido');
+	}
+
+	console.log('🎯 [DEBUG] queryParams final:', JSON.stringify(queryParams, null, 2));
 	return queryParams;
 }
 
 // Helper function to build message data from node parameters
-export function buildMessageData(parameters: any): ISendMessageOptions {
-	const messageData: ISendMessageOptions = {
-		body: parameters.body,
-	};
+export function buildMessageData(parameters: any, context?: IExecuteFunctions): ISendMessageOptions {
+	const messageType = parameters.messageType || 'TEXT';
 
-	// Add additional fields if provided
-	if (parameters.additionalFields) {
-		const additional = parameters.additionalFields;
-		
-		if (additional.repliedMessageId) {
-			messageData.repliedMessageId = additional.repliedMessageId;
+	// Para mensagens de texto
+	if (messageType === 'TEXT') {
+		const messageData: ISendMessageOptions = {
+			body: parameters.body,
+			isInternal: false,
+		};
+
+		// Add additional fields if provided
+		if (parameters.additionalFields) {
+			const additional = parameters.additionalFields;
+
+			if (additional.repliedMessageId) {
+				messageData.repliedMessageId = additional.repliedMessageId;
+			}
+
+			if (additional.scheduledDate) {
+				messageData.scheduledDate = formatDateToISO(additional.scheduledDate, context);
+			}
+
+			if (additional.isInternal !== undefined) {
+				messageData.isInternal = additional.isInternal;
+			}
 		}
-		
-		if (additional.scheduledDate) {
-			// Garantir que a data está no formato ISO 8601
-			messageData.scheduledDate = formatDateToISO(additional.scheduledDate);
-		}
-		
-		if (additional.isInternal !== undefined) {
-			messageData.isInternal = additional.isInternal;
+
+		return messageData;
+	} else {
+		// Para mensagens de mídia, seguir formato específico com attachments
+		if (parameters.attachmentUrl) {
+			const attachment: any = {
+				file: {},
+				fileName: parameters.fileName || `file.${getFileExtensionByType(messageType)}`,
+				mimeType: parameters.mimeType || getMimeTypeByType(messageType),
+				type: messageType,
+				url: parameters.attachmentUrl,
+				size: parameters.fileSize || 0
+			};
+
+			// Criar payload com attachments e isInternal
+			const mediaMessage: ISendMessageOptions = {
+				attachments: [attachment],
+				isInternal: false
+			};
+
+			// Adicionar body se fornecido (opcional para mensagens de mídia)
+			if (parameters.body && parameters.body.trim()) {
+				mediaMessage.body = parameters.body;
+			}
+
+			// Adicionar campos adicionais se presentes
+			if (parameters.additionalFields) {
+				const additional = parameters.additionalFields;
+
+				if (additional.scheduledDate) {
+					mediaMessage.scheduledDate = formatDateToISO(additional.scheduledDate, context);
+				}
+
+				if (additional.repliedMessageId) {
+					mediaMessage.repliedMessageId = additional.repliedMessageId;
+				}
+
+				if (additional.isInternal !== undefined) {
+					mediaMessage.isInternal = additional.isInternal;
+				}
+			}
+
+			return mediaMessage;
 		}
 	}
 
-	return messageData;
+	// Fallback para casos não cobertos
+	return {
+		body: parameters.body || '',
+		isInternal: false,
+	};
 }
 
-// Função auxiliar para formatar data para ISO 8601
-function formatDateToISO(dateValue: string): string {
-	// Se já está no formato ISO 8601 completo, retorna como está
+// Função auxiliar para obter extensão de arquivo baseada no tipo
+function getFileExtensionByType(type: string): string {
+	switch (type) {
+		case 'IMAGE': return 'png';
+		case 'VIDEO': return 'mp4';
+		case 'AUDIO': return 'ogg';
+		case 'FILE': return 'pdf';
+		default: return 'txt';
+	}
+}
+
+// Função auxiliar para obter MIME type baseado no tipo
+function getMimeTypeByType(type: string): string {
+	switch (type) {
+		case 'IMAGE': return 'image/png';
+		case 'VIDEO': return 'video/mp4';
+		case 'AUDIO': return 'audio/ogg; codecs=opus';
+		case 'FILE': return 'application/pdf';
+		default: return 'text/plain';
+	}
+}
+
+// Função auxiliar para gerar ID único para attachment
+function generateAttachmentId(): string {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		const r = Math.random() * 16 | 0;
+		const v = c === 'x' ? r : (r & 0x3 | 0x8);
+		return v.toString(16);
+	});
+}
+
+// Função auxiliar para formatar data para ISO 8601 convertendo para UTC0
+function formatDateToISO(dateValue: string, context?: IExecuteFunctions): string {
+	// Se já está no formato ISO 8601 completo com Z (UTC), retorna como está
 	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)) {
 		return dateValue;
 	}
-	
+
 	// Se está no formato ISO 8601 mas sem milissegundos, adiciona
 	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)) {
 		return dateValue.replace('Z', '.000Z');
 	}
-	
-	// Se está no formato ISO 8601 mas sem timezone, adiciona
-	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
-		return dateValue + '.000Z';
-	}
-	
-	// Se está no formato YYYY-MM-DD HH:mm:ss, converte para ISO 8601
-	if (dateValue.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
-		return dateValue.replace(' ', 'T') + '.000Z';
-	}
-	
-	// Se está no formato YYYY-MM-DD, adiciona horário
-	if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-		return dateValue + 'T00:00:00.000Z';
-	}
-	
-	// Tenta criar uma data válida e converter para ISO
-	try {
+
+	// Se já tem timezone offset (+XX:XX ou -XX:XX), converte para UTC
+	if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/)) {
 		const date = new Date(dateValue);
-		if (!isNaN(date.getTime())) {
-			return date.toISOString();
+		return date.toISOString();
+	}
+
+	// Obter timezone do n8n (padrão: America/New_York conforme documentação)
+	const n8nTimezone = process.env.GENERIC_TIMEZONE || 'America/Sao_Paulo';
+
+	try {
+		let dateInTimezone: string;
+
+		// Se está no formato ISO 8601 mas sem timezone, trata como timezone local do n8n
+		if (dateValue.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/)) {
+			dateInTimezone = dateValue;
 		}
+		// Se está no formato YYYY-MM-DD HH:mm:ss, converte para ISO
+		else if (dateValue.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
+			dateInTimezone = dateValue.replace(' ', 'T');
+		}
+		// Se está no formato YYYY-MM-DD, adiciona horário
+		else if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+			dateInTimezone = dateValue + 'T00:00:00';
+		}
+		// Tenta interpretar outros formatos
+		else {
+			const date = new Date(dateValue);
+			if (!isNaN(date.getTime())) {
+				// Se conseguiu criar uma data válida, assume que já está em UTC
+				return date.toISOString();
+			}
+			return dateValue; // Retorna original se não conseguir processar
+		}
+
+		// Converte a data do timezone local do n8n para UTC
+		return convertTimezoneToUTC(dateInTimezone, n8nTimezone);
+
 	} catch (error) {
 		// Se não conseguir converter, retorna o valor original
+		return dateValue;
 	}
-	
-	return dateValue;
+}
+
+// Função auxiliar para converter data de um timezone específico para UTC
+function convertTimezoneToUTC(dateString: string, timezone: string): string {
+	try {
+		// Cria uma data assumindo que está no timezone especificado
+		// Usa uma abordagem mais confiável com Intl.DateTimeFormat
+		const date = new Date(dateString);
+
+		// Obter a data/hora no timezone especificado
+		const formatter = new Intl.DateTimeFormat('en-CA', {
+			timeZone: timezone,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false
+		});
+
+		const parts = formatter.formatToParts(date);
+		const tzDateString = `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}T${parts.find(p => p.type === 'hour')?.value}:${parts.find(p => p.type === 'minute')?.value}:${parts.find(p => p.type === 'second')?.value}`;
+
+		// Calcula a diferença entre a data original e a data no timezone
+		const originalTime = new Date(dateString).getTime();
+		const timezoneTime = new Date(tzDateString).getTime();
+		const offset = timezoneTime - originalTime;
+
+		// Ajusta a data original subtraindo o offset para obter UTC
+		const utcDate = new Date(originalTime - offset);
+		return utcDate.toISOString();
+
+	} catch (error) {
+		// Fallback: tenta uma conversão mais simples
+		try {
+			// Assume que a data está no timezone especificado e converte para UTC
+			const tempDate = new Date(dateString + (timezone === 'UTC' ? 'Z' : ''));
+			return tempDate.toISOString();
+		} catch (fallbackError) {
+			// Se tudo falhar, retorna a data original
+			return dateString;
+		}
+	}
 }

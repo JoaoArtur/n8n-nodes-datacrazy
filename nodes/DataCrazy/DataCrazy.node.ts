@@ -80,6 +80,8 @@ import type { IStage } from './properties/pipelines/pipelines.types';
 import { getBusinessLossReasonsForLoadOptions } from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
 import { getAttendantsForLoadOptions } from './properties/attendants-crm';
+import { getInstancesForLoadOptions } from './properties/instances';
+import { getDepartmentsForLoadOptions } from './properties/departments';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -176,10 +178,14 @@ export class DataCrazy implements INodeType {
 			},
 			async getStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				try {
-					// Obter o pipelineId usando null coalesce - primeiro tenta 'destinationPipelineId' (deal-actions), depois 'pipelineId' (deals)
+					// Obter o pipelineId dependendo do contexto:
+					// - 'destinationPipelineId' para deal-actions
+					// - 'pipelineId' para deals
+					// - 'filters.pipeline' para filtros de conversas
 					const pipelineId =
 						(this.getCurrentNodeParameter('destinationPipelineId') as string) ||
 						(this.getCurrentNodeParameter('pipelineId') as string) ||
+						(this.getCurrentNodeParameter('filters.pipeline') as string) ||
 						'';
 
 					if (!pipelineId) {
@@ -302,6 +308,30 @@ export class DataCrazy implements INodeType {
 					throw new NodeOperationError(
 						this.getNode(),
 						`Erro ao carregar atendentes: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getInstances(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					const instancesResponse = await getInstancesForLoadOptions(this);
+					return instancesResponse;
+				} catch (error) {
+					console.error('Erro ao carregar instâncias:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar instâncias: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getDepartments(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					const departmentsResponse = await getDepartmentsForLoadOptions.call(this);
+					return departmentsResponse;
+				} catch (error) {
+					console.error('Erro ao carregar departamentos:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar departamentos: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
 					);
 				}
 			},
@@ -616,7 +646,16 @@ export class DataCrazy implements INodeType {
 				} else if (resource === 'conversations') {
 					switch (operation) {
 						case 'getAll':
-							const conversationQueryParams = buildConversationQueryParams(this.getNodeParameter('options', i, {}));
+							const rawOptions = this.getNodeParameter('options', i, {});
+							console.log('🔍 [DEBUG] DataCrazy.node.ts - Raw options from n8n:', JSON.stringify(rawOptions, null, 2));
+							
+							// Verificar se pipeline e stages estão no nível correto
+							const pipeline = this.getNodeParameter('options.pipeline', i, '');
+							const stages = this.getNodeParameter('options.stages', i, '');
+							console.log('🔍 [DEBUG] DataCrazy.node.ts - Pipeline direto:', pipeline);
+							console.log('🔍 [DEBUG] DataCrazy.node.ts - Stages direto:', stages);
+							
+							const conversationQueryParams = buildConversationQueryParams(rawOptions);
 							responseData = await getAllConversations(this, conversationQueryParams);
 							break;
 
@@ -627,10 +666,42 @@ export class DataCrazy implements INodeType {
 
 						case 'sendMessage':
 							const messageConversationId = this.getNodeParameter('conversationId', i) as string;
-							const messageData = buildMessageData({
-								body: this.getNodeParameter('body', i) as string,
+							const messageType = this.getNodeParameter('messageType', i, 'TEXT') as string;
+							
+							// Construir parâmetros base
+							const messageParams: any = {
+								messageType,
 								additionalFields: this.getNodeParameter('additionalFields', i, {}) as any,
-							});
+							};
+							
+							// Adicionar parâmetros específicos baseados no tipo de mensagem
+							if (messageType === 'TEXT') {
+								messageParams.body = this.getNodeParameter('body', i) as string;
+							} else {
+								// Para mensagens de mídia
+								messageParams.attachmentUrl = this.getNodeParameter('attachmentUrl', i) as string;
+								messageParams.fileName = this.getNodeParameter('fileName', i) as string;
+								messageParams.fileSize = this.getNodeParameter('fileSize', i) as number;
+								
+								// Adicionar mimeType se fornecido, senão será determinado automaticamente
+								try {
+									messageParams.mimeType = this.getNodeParameter('mimeType', i) as string;
+								} catch {
+									// mimeType será determinado automaticamente pela função
+								}
+								
+								// Adicionar body opcional para mensagens de mídia
+								try {
+									const optionalBody = this.getNodeParameter('body', i) as string;
+									if (optionalBody) {
+										messageParams.body = optionalBody;
+									}
+								} catch {
+									// body é opcional para mensagens de mídia
+								}
+							}
+							
+							const messageData = buildMessageData(messageParams, this);
 							responseData = await sendMessage(this, messageConversationId, messageData);
 							break;
 

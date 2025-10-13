@@ -5,6 +5,7 @@ import { attachmentsFields, attachmentsOperations } from './attachments';
 import { annotationsFields, annotationsOperations } from './annotations';
 import { tagsFields, tagsOperations } from './tags';
 import { conversationsFields, conversationsOperations } from './conversations';
+export * from './instances';
 import { dealActionsOperations, dealIds, destinationPipelineId, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
 import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
