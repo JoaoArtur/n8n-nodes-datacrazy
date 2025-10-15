@@ -25,14 +25,22 @@ export async function sendMessage(
 	return await request(context, 'POST', `/conversations/${conversationId}/messages`, messageData);
 }
 
+export async function finishConversation(
+	context: IExecuteFunctions,
+	conversationId: string,
+): Promise<any> {
+	const messagingBaseUrl = 'https://messaging.g1.datacrazy.io/api/messaging';
+	return await request(context, 'POST', `/conversations/${conversationId}/finish`, undefined, undefined, messagingBaseUrl);
+}
+
 export function buildConversationQueryParams(options: any): any {
 	console.log('🔍 [DEBUG] buildConversationQueryParams - Recebido options:', JSON.stringify(options, null, 2));
-	
+
 	const queryParams: any = {};
 
 	// Extrair skip, take, search, pipeline, stages e filters do objeto options
 	const { skip, take, search, pipeline, stages, filters } = options;
-	
+
 	console.log('🔍 [DEBUG] Campos extraídos:', {
 		skip,
 		take,
@@ -77,13 +85,13 @@ export function buildConversationQueryParams(options: any): any {
 		console.log('🔍 [DEBUG] Processando filtros avançados:', filters);
 		filters.forEach((filterObject: any, index: number) => {
 			console.log(`🔍 [DEBUG] Processando objeto de filtro ${index}:`, filterObject);
-			
+
 			// O n8n envia os filtros como um objeto onde cada propriedade é um campo de filtro
 			// Em vez de { field: "tags", value: [...] }, recebemos { tags: [...], initialized: true, ... }
 			Object.keys(filterObject).forEach((fieldName: string) => {
 				const fieldValue = filterObject[fieldName];
 				console.log(`🔍 [DEBUG] Processando campo: ${fieldName} = ${fieldValue}`);
-				
+
 				if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
 					// Mapear campos para os nomes corretos da API
 					const fieldMap: { [key: string]: string } = {
@@ -250,7 +258,7 @@ function formatDateToISO(dateValue: string, context?: IExecuteFunctions): string
 	}
 
 	// Obter timezone do n8n (padrão: America/New_York conforme documentação)
-	const n8nTimezone = process.env.GENERIC_TIMEZONE || 'America/Sao_Paulo';
+	const n8nTimezone = 'America/Sao_Paulo';
 
 	try {
 		let dateInTimezone: string;

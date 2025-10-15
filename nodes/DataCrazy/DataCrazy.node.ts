@@ -57,9 +57,16 @@ import {
 	getAllConversations,
 	getConversationById,
 	sendMessage,
+	finishConversation,
 	buildConversationQueryParams,
 	buildMessageData,
 } from './properties/conversations';
+import {
+	getAllAdditionalFields,
+	setAdditionalFieldValue,
+	buildAdditionalFieldQueryParams,
+	getAdditionalFieldsForLoadOptions,
+} from './properties/additional-fields';
 import {
 	moveDealAction,
 	winDealAction,
@@ -332,6 +339,18 @@ export class DataCrazy implements INodeType {
 					throw new NodeOperationError(
 						this.getNode(),
 						`Erro ao carregar departamentos: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+					);
+				}
+			},
+			async getAdditionalFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					const additionalFieldsResponse = await getAdditionalFieldsForLoadOptions.call(this);
+					return additionalFieldsResponse;
+				} catch (error) {
+					console.error('Erro ao carregar campos adicionais:', error);
+					throw new NodeOperationError(
+						this.getNode(),
+						`Erro ao carregar campos adicionais: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
 					);
 				}
 			},
@@ -703,6 +722,37 @@ export class DataCrazy implements INodeType {
 							
 							const messageData = buildMessageData(messageParams, this);
 							responseData = await sendMessage(this, messageConversationId, messageData);
+							break;
+
+						case 'finish':
+							const finishConversationId = this.getNodeParameter('conversationId', i) as string;
+							responseData = await finishConversation(this, finishConversationId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'additionalFields') {
+					const scope = this.getNodeParameter('scope', i) as 'deal' | 'lead';
+					
+					switch (operation) {
+						case 'getAll':
+							const queryParams = buildAdditionalFieldQueryParams(this.getNodeParameter('options', i, {}));
+							responseData = await getAllAdditionalFields.call(this, scope, queryParams);
+							break;
+
+						case 'setValue':
+							const entityId = this.getNodeParameter(scope === 'deal' ? 'dealId' : 'leadId', i) as string;
+							const additionalFieldId = this.getNodeParameter('additionalFieldId', i) as string;
+							const rawValue = this.getNodeParameter('value', i) as string;
+							
+							// Converter o valor para o formato esperado pela API
+							const value = { value: rawValue };
+							
+							responseData = await setAdditionalFieldValue.call(this, scope, entityId, additionalFieldId, value);
 							break;
 
 						default:

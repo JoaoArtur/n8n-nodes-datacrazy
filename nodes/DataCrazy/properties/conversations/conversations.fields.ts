@@ -10,7 +10,7 @@ const conversationsFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['conversations'],
-				operation: ['get', 'sendMessage'],
+				operation: ['get', 'sendMessage', 'finish'],
 			},
 		},
 		default: '',

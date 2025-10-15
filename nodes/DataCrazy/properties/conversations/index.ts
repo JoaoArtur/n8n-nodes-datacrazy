@@ -4,6 +4,7 @@ import {
 	getAllConversations,
 	getConversationById,
 	sendMessage,
+	finishConversation,
 	buildConversationQueryParams,
 	buildMessageData,
 } from './conversations.functions';
@@ -14,6 +15,7 @@ export {
 	getAllConversations,
 	getConversationById,
 	sendMessage,
+	finishConversation,
 	buildConversationQueryParams,
 	buildMessageData,
 };

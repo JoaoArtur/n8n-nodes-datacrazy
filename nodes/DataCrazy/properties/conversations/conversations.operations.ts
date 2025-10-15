@@ -30,6 +30,12 @@ const conversationsOperations: INodeProperties[] = [
 				description: 'Enviar mensagem para uma conversa',
 				action: 'Enviar mensagem para conversa',
 			},
+			{
+				name: 'Finalizar Conversa',
+				value: 'finish',
+				description: 'Finalizar uma conversa com o cliente',
+				action: 'Finalizar conversa',
+			},
 		],
 		default: 'getAll',
 	},

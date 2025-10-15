@@ -19,10 +19,10 @@ export async function getBusinessLossReasonsForLoadOptions(
 		const response = await requestForLoadOptions(
 			this,
 			'GET',
-			'/crm/business-loss-reasons',
+			'/business-loss-reasons',
 			undefined,
 			defaultParams,
-			'https://api.datacrazy.io/v1/api/v1/crm',
+			'https://api.datacrazy.io/v1/api/api/v1/crm/crm',
 		);
 		return response as IBusinessLossReasonsResponse;
 	} catch (error: any) {
