@@ -19,6 +19,12 @@ const dealsOperations: INodeProperties[] = [
 				action: 'Buscar todos os negócios',
 			},
 			{
+				name: 'Buscar por Estágio',
+				value: 'getByStage',
+				description: 'Buscar negócios por estágio específico',
+				action: 'Buscar negócios por estágio',
+			},
+			{
 				name: 'Criar Negócio',
 				value: 'create',
 				description: 'Criar um novo negócio',

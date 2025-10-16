@@ -54,6 +54,34 @@ function formatDateToISO(dateValue: string): string {
 }
 
 /**
+ * Busca negócios por estágio específico
+ */
+export async function getDealsByStage(
+	this: IExecuteFunctions,
+	stageId: string,
+	take: number = 100,
+	skip: number = 0,
+	queryParams?: IDealQueryParams,
+): Promise<IDealsResponse> {
+	const endpoint = '/businesses';
+	
+	// Criar parâmetros de consulta com filtro de stage
+	const baseParams = buildDealQueryParams(queryParams);
+	
+	// Adicionar parâmetros de paginação
+	baseParams.take = take;
+	baseParams.skip = skip;
+	
+	// Adicionar filtro de stage.id
+	if (!baseParams.filter) {
+		baseParams.filter = {};
+	}
+	baseParams.filter['stage.id'] = stageId;
+
+	return await request(this, 'GET', endpoint, {}, baseParams);
+}
+
+/**
  * Busca todos os negócios
  */
 export async function getAllDeals(

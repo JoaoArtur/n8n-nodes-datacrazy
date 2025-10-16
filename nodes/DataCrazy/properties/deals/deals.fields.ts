@@ -17,6 +17,78 @@ const dealsFields: INodeProperties[] = [
 		description: 'ID único do negócio',
 	},
 
+	// Fields for getByStage operation
+	{
+		displayName: 'Pipeline',
+		name: 'pipelineId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getPipelines',
+		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['deals'],
+				operation: ['getByStage'],
+			},
+		},
+		default: '',
+		description: 'Selecione o pipeline para filtrar os negócios',
+	},
+	{
+		displayName: 'Estágio',
+		name: 'stageId',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getStages',
+			loadOptionsDependsOn: ['pipelineId'],
+		},
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['deals'],
+				operation: ['getByStage'],
+			},
+		},
+		default: '',
+		description: 'Selecione o estágio para filtrar os negócios',
+	},
+	{
+		displayName: 'Quantidade',
+		name: 'take',
+		type: 'number',
+		typeOptions: {
+			minValue: 1,
+			maxValue: 1000,
+		},
+		required: false,
+		displayOptions: {
+			show: {
+				resource: ['deals'],
+				operation: ['getByStage'],
+			},
+		},
+		default: 100,
+		description: 'Número máximo de negócios para retornar (padrão: 100)',
+	},
+	{
+		displayName: 'Pular',
+		name: 'skip',
+		type: 'number',
+		typeOptions: {
+			minValue: 0,
+		},
+		required: false,
+		displayOptions: {
+			show: {
+				resource: ['deals'],
+				operation: ['getByStage'],
+			},
+		},
+		default: 0,
+		description: 'Número de registros para pular (paginação)',
+	},
+
 	// Create and Update Deal Fields
 	{
 		displayName: 'ID do Lead',
