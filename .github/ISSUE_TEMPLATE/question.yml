@@ -1,0 +1,195 @@
+name: ❓ Question
+description: Fazer uma pergunta ou solicitar ajuda com o n8n-nodes-datacrazy
+title: "[QUESTION] "
+labels: ["question", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tem uma pergunta sobre como usar o n8n-nodes-datacrazy? Estamos aqui para ajudar!
+
+        **Antes de continuar, verifique:**
+        - 📖 [README.md](../README.md) - Documentação principal
+        - 🔍 [Issues existentes](../../issues) - Sua pergunta pode já ter sido respondida
+        - 📚 [Documentação do DataCrazy](https://docs.datacrazy.io) - Documentação oficial da API
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Verifique os itens abaixo antes de continuar
+      options:
+        - label: Li a documentação do projeto
+          required: true
+        - label: Procurei por issues similares
+          required: true
+        - label: Tentei resolver o problema sozinho
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Categoria da Pergunta
+      description: Qual tipo de ajuda você precisa?
+      options:
+        - 🚀 Instalação e Configuração
+        - 🔧 Como usar um módulo específico
+        - 🔗 Integração com n8n
+        - 🛠️ Configuração de credenciais
+        - 📊 Casos de uso e exemplos
+        - 🐛 Comportamento inesperado
+        - 🚀 Performance e otimização
+        - 🔄 Migração/Atualização
+        - 💡 Melhores práticas
+        - 🌐 Integração com DataCrazy API
+        - 📚 Documentação não clara
+        - 🤔 Outro
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Sua Pergunta
+      description: Descreva sua pergunta de forma clara e detalhada
+      placeholder: |
+        Seja específico sobre:
+        - O que você está tentando fazer
+        - O que você já tentou
+        - Onde está encontrando dificuldades
+        - Qual resultado você espera
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Módulo Relacionado (se aplicável)
+      description: Sua pergunta é sobre algum módulo específico?
+      options:
+        - Não específico
+        - Leads
+        - Negócios (Deals)
+        - Conversas
+        - Anexos
+        - Anotações
+        - Tags
+        - Pipelines
+        - Ações de Negócios
+        - Campos Adicionais
+        - Credenciais
+        - Configuração Geral
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      description: Forneça contexto sobre seu caso de uso
+      placeholder: |
+        Exemplo:
+        - Que tipo de workflow você está criando?
+        - Qual é seu objetivo final?
+        - Como isso se encaixa no seu processo de negócio?
+    validations:
+      required: false
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: O que você já tentou?
+      description: Descreva as tentativas que você já fez
+      placeholder: |
+        Liste as abordagens que você já tentou:
+        - Configurações testadas
+        - Documentação consultada
+        - Soluções alternativas tentadas
+        - Mensagens de erro encontradas
+    validations:
+      required: false
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Configuração Atual
+      description: Compartilhe sua configuração atual (remova informações sensíveis)
+      placeholder: |
+        {
+          "resource": "leads",
+          "operation": "create",
+          "name": "{{ $json.name }}",
+          ...
+        }
+      render: json
+    validations:
+      required: false
+
+  - type: input
+    id: n8n-version
+    attributes:
+      label: Versão do n8n
+      description: Qual versão do n8n você está usando?
+      placeholder: ex. 1.0.0
+    validations:
+      required: false
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Versão do n8n-nodes-datacrazy
+      description: Qual versão do node DataCrazy você está usando?
+      placeholder: ex. 1.0.58
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Mensagens de Erro (se aplicável)
+      description: Cole aqui qualquer mensagem de erro que você esteja recebendo
+      placeholder: |
+        Cole as mensagens de erro completas aqui...
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: Resultado Esperado
+      description: Descreva o que você espera que aconteça
+      placeholder: |
+        Descreva claramente:
+        - Qual deveria ser o comportamento
+        - Que dados você espera receber
+        - Como deveria funcionar idealmente
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgência
+      description: Quão urgente é esta questão para você?
+      options:
+        - 🔴 Urgente - Bloqueando trabalho crítico
+        - 🟡 Moderada - Importante mas não bloqueante
+        - 🟢 Baixa - Curiosidade ou melhoria futura
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Informações Adicionais
+      description: Qualquer outra informação que possa ser útil
+      placeholder: |
+        - Screenshots do n8n workflow
+        - Links para documentação relevante
+        - Contexto do seu ambiente de produção
+        - Deadline ou restrições específicas
+    validations:
+      required: false

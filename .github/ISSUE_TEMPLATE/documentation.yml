@@ -1,0 +1,184 @@
+name: 📚 Documentation
+description: Reportar problemas ou sugerir melhorias na documentação
+title: "[DOCS] "
+labels: ["documentation", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a melhorar nossa documentação! Documentação clara é essencial para uma boa experiência do desenvolvedor.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Verifique os itens abaixo antes de continuar
+      options:
+        - label: Verifiquei se já existe uma issue similar
+          required: true
+        - label: Li toda a documentação relacionada
+          required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo de Issue de Documentação
+      description: Que tipo de problema ou melhoria você está reportando?
+      options:
+        - 🐛 Erro na documentação
+        - 📝 Documentação faltando
+        - 🔄 Documentação desatualizada
+        - ✨ Melhoria na documentação
+        - 🌐 Tradução
+        - 📖 Exemplo faltando
+        - 🎯 Clareza/Organização
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição
+      description: Descreva o problema ou melhoria na documentação
+      placeholder: |
+        Descreva claramente:
+        - O que está incorreto, faltando ou confuso
+        - Onde encontrou o problema
+        - Como deveria ser corrigido
+    validations:
+      required: true
+
+  - type: dropdown
+    id: location
+    attributes:
+      label: Localização
+      description: Onde está localizado o problema na documentação?
+      options:
+        - README.md
+        - Documentação de módulo específico
+        - Exemplos de código
+        - Comentários no código
+        - Templates de issue
+        - Guia de contribuição
+        - Configuração/Setup
+        - API Reference
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: file-path
+    attributes:
+      label: Arquivo/Seção Específica
+      description: Se aplicável, especifique o arquivo ou seção exata
+      placeholder: ex. README.md seção "Instalação", ou nodes/DataCrazy/properties/leads/
+    validations:
+      required: false
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Módulo Relacionado (se aplicável)
+      description: A qual módulo a documentação se relaciona?
+      options:
+        - Geral/Setup
+        - Leads
+        - Negócios (Deals)
+        - Conversas
+        - Anexos
+        - Anotações
+        - Tags
+        - Pipelines
+        - Ações de Negócios
+        - Campos Adicionais
+        - Credenciais
+        - Desenvolvimento
+    validations:
+      required: false
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: Conteúdo Atual (se aplicável)
+      description: Cole o conteúdo atual que precisa ser corrigido
+      placeholder: |
+        Cole aqui o texto atual que está incorreto ou confuso...
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggested-content
+    attributes:
+      label: Conteúdo Sugerido
+      description: Como deveria ser o conteúdo correto?
+      placeholder: |
+        Forneça o texto corrigido ou sugestão de melhoria...
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Exemplos Necessários
+      description: Que exemplos de código ou uso seriam úteis?
+      placeholder: |
+        Descreva que exemplos práticos ajudariam a esclarecer a documentação...
+        
+        Exemplo: "Um exemplo de como configurar X para fazer Y"
+      render: markdown
+    validations:
+      required: false
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Público-Alvo
+      description: Para quem esta documentação é mais importante?
+      options:
+        - Usuários iniciantes
+        - Usuários avançados
+        - Desenvolvedores contribuindo
+        - Administradores de sistema
+        - Todos os usuários
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Qual a importância desta melhoria na documentação?
+      options:
+        - 🔴 Alta - Informação crítica incorreta/faltando
+        - 🟡 Média - Melhoria importante para UX
+        - 🟢 Baixa - Melhoria menor ou cosmética
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto Adicional
+      description: Qualquer informação adicional que possa ser útil
+      placeholder: |
+        - Como você chegou a esta parte da documentação?
+        - Que tarefa estava tentando realizar?
+        - Links para recursos externos relevantes
+        - Screenshots se aplicável
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribuição
+      description: Você estaria disposto a ajudar?
+      options:
+        - label: Posso ajudar a escrever a correção
+        - label: Posso revisar a documentação corrigida
+        - label: Posso fornecer exemplos adicionais
+        - label: Posso testar as instruções corrigidas

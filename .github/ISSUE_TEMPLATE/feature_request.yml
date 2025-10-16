@@ -1,0 +1,173 @@
+name: ✨ Feature Request
+description: Solicitar um novo recurso ou melhoria para o n8n-nodes-datacrazy
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por sugerir uma melhoria! Sua contribuição é muito importante para o projeto.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Verifique os itens abaixo antes de continuar
+      options:
+        - label: Verifiquei se já existe uma solicitação similar
+          required: true
+        - label: Li a documentação do projeto
+          required: true
+        - label: Considerei alternativas existentes
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Resumo do Recurso
+      description: Descreva brevemente o recurso solicitado
+      placeholder: Uma breve descrição do que você gostaria de ver implementado...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou Necessidade
+      description: Que problema este recurso resolveria?
+      placeholder: |
+        Descreva o problema ou necessidade que motivou esta solicitação...
+
+        Exemplo: "Atualmente não é possível fazer X, o que dificulta Y..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Como você imagina que este recurso deveria funcionar?
+      placeholder: |
+        Descreva detalhadamente como o recurso deveria funcionar...
+
+        Inclua:
+        - Interface do usuário esperada
+        - Comportamento esperado
+        - Parâmetros necessários
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Módulo Relacionado
+      description: A qual módulo este recurso se relaciona?
+      options:
+        - Leads
+        - Negócios (Deals)
+        - Conversas
+        - Anexos
+        - Anotações
+        - Tags
+        - Pipelines
+        - Ações de Negócios
+        - Campos Adicionais
+        - Credenciais
+        - Novo Módulo
+        - Geral/Infraestrutura
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Tipo de Recurso
+      description: Que tipo de recurso você está solicitando?
+      options:
+        - Nova operação em módulo existente
+        - Novo módulo completo
+        - Melhoria em operação existente
+        - Nova funcionalidade de configuração
+        - Melhoria de performance
+        - Melhoria de UX/UI
+        - Integração com API externa
+        - Outro
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Casos de Uso
+      description: Forneça exemplos específicos de como este recurso seria usado
+      placeholder: |
+        Exemplo 1: Como usuário de CRM, eu gostaria de...
+        Exemplo 2: Como desenvolvedor, eu preciso...
+        Exemplo 3: Em um workflow de vendas, seria útil...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Que outras soluções você considerou?
+      placeholder: |
+        Descreva outras abordagens que você considerou e por que não são adequadas...
+
+        Exemplo: "Tentei usar X, mas não funciona porque..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: api-reference
+    attributes:
+      label: Referência da API DataCrazy
+      description: Se aplicável, forneça links ou documentação da API DataCrazy relacionada
+      placeholder: |
+        Links para documentação da API:
+        - https://docs.datacrazy.io/api/...
+
+        Endpoints relevantes:
+        - GET /api/...
+        - POST /api/...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Qual a importância deste recurso para você?
+      options:
+        - 🔴 Alta - Recurso essencial para meu workflow
+        - 🟡 Média - Recurso importante mas não bloqueante
+        - 🟢 Baixa - Seria bom ter mas não é urgente
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Informações Adicionais
+      description: Qualquer informação adicional que possa ser útil
+      placeholder: |
+        - Screenshots ou mockups
+        - Links para recursos similares em outras ferramentas
+        - Contexto adicional sobre seu caso de uso
+        - Disposição para contribuir com desenvolvimento/testes
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribuição
+      description: Você estaria disposto a contribuir?
+      options:
+        - label: Posso ajudar com testes
+        - label: Posso ajudar com documentação
+        - label: Posso ajudar com desenvolvimento
+        - label: Posso fornecer feedback durante desenvolvimento

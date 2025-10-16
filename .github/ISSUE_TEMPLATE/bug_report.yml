@@ -1,0 +1,173 @@
+name: 🐛 Bug Report
+description: Reportar um bug ou problema no n8n-nodes-datacrazy
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar um bug! Por favor, preencha as informações abaixo para nos ajudar a resolver o problema rapidamente.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Verifique os itens abaixo antes de continuar
+      options:
+        - label: Verifiquei se já existe uma issue similar
+          required: true
+        - label: Li a documentação do projeto
+          required: true
+        - label: Testei com a versão mais recente
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Bug
+      description: Descreva claramente o problema encontrado
+      placeholder: Descreva o que está acontecendo...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Liste os passos exatos para reproduzir o bug
+      placeholder: |
+        1. Vá para '...'
+        2. Clique em '...'
+        3. Configure '...'
+        4. Veja o erro
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que deveria acontecer?
+      placeholder: Descreva o comportamento esperado...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Atual
+      description: O que está acontecendo na realidade?
+      placeholder: Descreva o comportamento atual...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Módulo Afetado
+      description: Qual módulo está apresentando o problema?
+      options:
+        - Leads
+        - Negócios (Deals)
+        - Conversas
+        - Anexos
+        - Anotações
+        - Tags
+        - Pipelines
+        - Ações de Negócios
+        - Campos Adicionais
+        - Credenciais
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: n8n-version
+    attributes:
+      label: Versão do n8n
+      description: Qual versão do n8n você está usando?
+      placeholder: ex. 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Versão do n8n-nodes-datacrazy
+      description: Qual versão do node DataCrazy você está usando?
+      placeholder: ex. 1.0.58
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operacional
+      description: Qual sistema operacional você está usando?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Docker
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: nodejs-version
+    attributes:
+      label: Versão do Node.js
+      description: Qual versão do Node.js você está usando?
+      placeholder: ex. 18.17.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs de Erro
+      description: Cole aqui os logs de erro completos
+      placeholder: |
+        Cole os logs aqui...
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuração do Node
+      description: Compartilhe a configuração do node (remova informações sensíveis)
+      placeholder: |
+        {
+          "resource": "leads",
+          "operation": "create",
+          ...
+        }
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Informações Adicionais
+      description: Qualquer informação adicional que possa ser útil
+      placeholder: Screenshots, contexto adicional, tentativas de solução...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade
+      description: Qual a severidade do problema?
+      options:
+        - 🔴 Crítica - Impede o uso básico
+        - 🟡 Alta - Funcionalidade importante quebrada
+        - 🟢 Média - Bug menor ou workaround disponível
+        - 🔵 Baixa - Problema cosmético ou de documentação
+    validations:
+      required: true

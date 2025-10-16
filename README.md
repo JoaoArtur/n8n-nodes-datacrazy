@@ -326,8 +326,8 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 📞 Suporte
 
-- **Email**: contato@datacrazy.com
-- **Documentação**: [DataCrazy Docs](https://docs.datacrazy.com)
+- **Email**: contato@datacrazy.io
+- **Documentação**: [DataCrazy Docs](https://docs.datacrazy.io)
 - **Issues**: [GitHub Issues](https://github.com/joaoartur/n8n-nodes-datacrazy/issues)
 
 ---
