@@ -6,14 +6,14 @@
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/deliverify-ai/n8n-nodes-d-api",
+  "homepage": "https://github.com/joaoartur/n8n-nodes-datacrazy",
   "author": {
     "name": "DataCrazy",
     "email": "contato@datacrazy.com"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deliverify-ai/n8n-nodes-datacrazy.git"
+    "url": "git+https://github.com/joaoartur/n8n-nodes-datacrazy.git"
   },
   "engines": {
     "node": ">=18.10",
