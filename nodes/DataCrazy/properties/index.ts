@@ -13,6 +13,7 @@ import { listsFields, listsOperations } from './lists';
 import { productsFields, productsOperations } from './products';
 import { dealAttachmentsFields, dealAttachmentsOperations } from './deal-attachments';
 import { lossReasonsFields, lossReasonsOperations } from './business-loss-reasons';
+import { instancesFields, instancesOperations } from './instances';
 import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
 const resourcesOptions: INodeProperties = {
@@ -74,6 +75,10 @@ const resourcesOptions: INodeProperties = {
 			value: 'lossReasons',
 		},
 		{
+			name: 'Conexões',
+			value: 'instances',
+		},
+		{
 			name: 'Campos Adicionais',
 			value: 'additionalFields',
 		},
@@ -119,4 +124,6 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	...dealAttachmentsFields,
 	...lossReasonsOperations,
 	...lossReasonsFields,
+	...instancesOperations,
+	...instancesFields,
 ];

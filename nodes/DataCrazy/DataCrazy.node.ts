@@ -100,7 +100,11 @@ import {
 } from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
 import { getAttendantsForLoadOptions } from './properties/attendants-crm';
-import { getInstancesForLoadOptions } from './properties/instances';
+import {
+	getInstancesForLoadOptions,
+	getAllInstances,
+	getInstanceById,
+} from './properties/instances';
 import { getDepartmentsForLoadOptions } from './properties/departments';
 import {
 	getAllActivities,
@@ -1029,6 +1033,23 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteLossReasonId = this.getNodeParameter('lossReasonRecordId', i) as string;
 							responseData = await deleteLossReason.call(this, deleteLossReasonId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'instances') {
+					switch (operation) {
+						case 'getAll':
+							responseData = await getAllInstances.call(this);
+							break;
+
+						case 'get':
+							const instanceId = this.getNodeParameter('instanceId', i) as string;
+							responseData = await getInstanceById.call(this, instanceId);
 							break;
 
 						default:
