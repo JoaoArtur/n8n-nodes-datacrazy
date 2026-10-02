@@ -102,6 +102,15 @@ import {
 	buildActivityData,
 	buildActivityQueryParams,
 } from './properties/activities';
+import {
+	getAllLists,
+	createList,
+	getListById,
+	updateList,
+	deleteList,
+	buildListData,
+	buildListQueryParams,
+} from './properties/lists';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -835,6 +844,47 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteActivityId = this.getNodeParameter('activityId', i) as string;
 							responseData = await deleteActivity.call(this, deleteActivityId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'lists') {
+					switch (operation) {
+						case 'getAll':
+							const listQueryParams = buildListQueryParams(
+								this.getNodeParameter('listOptions', i, {}) as object,
+							);
+							responseData = await getAllLists.call(this, listQueryParams);
+							break;
+
+						case 'create':
+							const createListData = buildListData({
+								...(this.getNodeParameter('listAdditionalFields', i, {}) as object),
+								name: this.getNodeParameter('listName', i) as string,
+							}) as any;
+							responseData = await createList.call(this, createListData);
+							break;
+
+						case 'get':
+							const listId = this.getNodeParameter('listId', i) as string;
+							responseData = await getListById.call(this, listId);
+							break;
+
+						case 'update':
+							const updateListId = this.getNodeParameter('listId', i) as string;
+							const updateListData = buildListData({
+								...(this.getNodeParameter('listAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateList.call(this, updateListId, updateListData);
+							break;
+
+						case 'delete':
+							const deleteListId = this.getNodeParameter('listId', i) as string;
+							responseData = await deleteList.call(this, deleteListId);
 							break;
 
 						default:
