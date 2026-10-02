@@ -65,21 +65,6 @@ const attachmentsFields: INodeProperties[] = [
 	},
 
 	{
-		displayName: 'Tamanho do Arquivo',
-		name: 'fileSize',
-		type: 'number',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: ['attachments'],
-				operation: ['create'],
-			},
-		},
-		default: 0,
-		description: 'Tamanho do arquivo em bytes',
-	},
-
-	{
 		displayName: 'Descrição',
 		name: 'description',
 		type: 'string',
