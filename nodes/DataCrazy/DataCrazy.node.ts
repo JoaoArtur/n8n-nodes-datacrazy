@@ -623,7 +623,7 @@ export class DataCrazy implements INodeType {
 				} else if (resource === 'pipelines') {
 					switch (operation) {
 						case 'getAll':
-							const take = this.getNodeParameter('limit', i, 500) as number;
+							const take = this.getNodeParameter('take', i, 500) as number;
 							const skip = this.getNodeParameter('skip', i, 0) as number;
 							const search = this.getNodeParameter('search', i, '') as string;
 
