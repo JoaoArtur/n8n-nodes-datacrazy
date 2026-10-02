@@ -269,6 +269,10 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 			if (filterItem.lastMovedBefore !== undefined && filterItem.lastMovedBefore.trim() !== '') {
 				qs.filter.lastMovedBefore = filterItem.lastMovedBefore.trim();
 			}
+
+			if (filterItem.externalId !== undefined && filterItem.externalId.trim() !== '') {
+				qs.filter.externalId = filterItem.externalId.trim();
+			}
 		});
 	}
 
@@ -346,6 +350,10 @@ export function buildDealQueryParams(queryParams?: IDealQueryParams): any {
 
 		if (filter.lastMovedBefore !== undefined && filter.lastMovedBefore.trim() !== '') {
 			qs.filter.lastMovedBefore = filter.lastMovedBefore.trim();
+		}
+
+		if (filter.externalId !== undefined && filter.externalId.trim() !== '') {
+			qs.filter.externalId = filter.externalId.trim();
 		}
 	}
 

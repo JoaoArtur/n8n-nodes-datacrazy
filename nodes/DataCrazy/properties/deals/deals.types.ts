@@ -37,6 +37,7 @@ export interface IBusinessFilterOptions {
 	createdAtLessOrEqual?: string;
 	lastMovedAfter?: string;
 	lastMovedBefore?: string;
+	externalId?: string;
 }
 
 /**
