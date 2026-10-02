@@ -93,6 +93,15 @@ import type { IBusinessLossReason } from './properties/business-loss-reasons/bus
 import { getAttendantsForLoadOptions } from './properties/attendants-crm';
 import { getInstancesForLoadOptions } from './properties/instances';
 import { getDepartmentsForLoadOptions } from './properties/departments';
+import {
+	getAllActivities,
+	createActivity,
+	getActivityById,
+	updateActivity,
+	deleteActivity,
+	buildActivityData,
+	buildActivityQueryParams,
+} from './properties/activities';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -784,6 +793,48 @@ export class DataCrazy implements INodeType {
 							const value = { value: rawValue };
 							
 							responseData = await setAdditionalFieldValue.call(this, scope, entityId, additionalFieldId, value);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'activities') {
+					switch (operation) {
+						case 'getAll':
+							const activityQueryParams = buildActivityQueryParams(
+								this.getNodeParameter('activityOptions', i, {}) as object,
+							);
+							responseData = await getAllActivities.call(this, activityQueryParams);
+							break;
+
+						case 'create':
+							const createActivityData = buildActivityData({
+								...(this.getNodeParameter('activityAdditionalFields', i, {}) as object),
+								title: this.getNodeParameter('activityTitle', i) as string,
+								leadId: this.getNodeParameter('activityLeadId', i) as string,
+							}) as any;
+							responseData = await createActivity.call(this, createActivityData);
+							break;
+
+						case 'get':
+							const activityId = this.getNodeParameter('activityId', i) as string;
+							responseData = await getActivityById.call(this, activityId);
+							break;
+
+						case 'update':
+							const updateActivityId = this.getNodeParameter('activityId', i) as string;
+							const updateActivityData = buildActivityData({
+								...(this.getNodeParameter('activityAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateActivity.call(this, updateActivityId, updateActivityData);
+							break;
+
+						case 'delete':
+							const deleteActivityId = this.getNodeParameter('activityId', i) as string;
+							responseData = await deleteActivity.call(this, deleteActivityId);
 							break;
 
 						default:

@@ -8,6 +8,7 @@ import { conversationsFields, conversationsOperations } from './conversations';
 import { additionalFieldsFields, additionalFieldsOperations } from './additional-fields';
 export * from './instances';
 import { dealActionsOperations, dealIds, destinationPipelineId, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
+import { activitiesFields, activitiesOperations } from './activities';
 import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
 const resourcesOptions: INodeProperties = {
@@ -49,6 +50,10 @@ const resourcesOptions: INodeProperties = {
 			value: 'pipelines',
 		},
 		{
+			name: 'Atividades',
+			value: 'activities',
+		},
+		{
 			name: 'Campos Adicionais',
 			value: 'additionalFields',
 		},
@@ -84,4 +89,6 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	pipelineSkip,
 	pipelineSearch,
 	pipelineId,
+	...activitiesOperations,
+	...activitiesFields,
 ];
