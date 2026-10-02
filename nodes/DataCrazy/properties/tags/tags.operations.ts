@@ -37,6 +37,12 @@ export const tagsOperations: INodeProperties[] = [
 				action: 'Atualizar uma tag',
 			},
 			{
+				name: 'Contar Leads',
+				value: 'getLeadsCount',
+				description: 'Quantidade de leads com a tag',
+				action: 'Contar leads da tag',
+			},
+			{
 				name: 'Excluir',
 				value: 'delete',
 				description: 'Excluir uma tag',

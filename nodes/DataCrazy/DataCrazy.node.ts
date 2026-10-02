@@ -52,6 +52,7 @@ import {
 	getTagById,
 	updateTag,
 	deleteTag,
+	getTagLeadsCount,
 	buildTagData,
 	getTagsForLoadOptions,
 } from './properties/tags';
@@ -680,6 +681,11 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteTagId = this.getNodeParameter('tagId', i) as string;
 							responseData = await deleteTag.call(this, deleteTagId);
+							break;
+
+						case 'getLeadsCount':
+							const countTagId = this.getNodeParameter('tagId', i) as string;
+							responseData = await getTagLeadsCount.call(this, countTagId);
 							break;
 
 						default:
