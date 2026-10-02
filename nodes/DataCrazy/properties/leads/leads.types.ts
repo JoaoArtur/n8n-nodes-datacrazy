@@ -92,3 +92,15 @@ export interface ILeadQueryParams {
 	filter?: ILeadFilterOptions;
 	[key: string]: any;
 }
+
+export interface ILeadHistoryFilter {
+	businessId?: string;
+	comment?: string;
+}
+
+export interface ILeadSubResourceQueryParams {
+	skip?: number;
+	take?: number;
+	search?: string;
+	filter?: ILeadHistoryFilter;
+}

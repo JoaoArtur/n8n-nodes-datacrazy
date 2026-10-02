@@ -21,6 +21,7 @@ import {
 	getLeadActivities,
 	getLeadHistory,
 	getLeadBusinesses,
+	buildLeadSubResourceQueryParams,
 } from './properties/leads';
 import {
 	getAllDeals,
@@ -413,17 +414,29 @@ export class DataCrazy implements INodeType {
 
 						case 'getActivities':
 							const activitiesLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadActivities(this, activitiesLeadId);
+							responseData = await getLeadActivities(
+								this,
+								activitiesLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						case 'getHistory':
 							const historyLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadHistory(this, historyLeadId);
+							responseData = await getLeadHistory(
+								this,
+								historyLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						case 'getBusinesses':
 							const businessesLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadBusinesses(this, businessesLeadId);
+							responseData = await getLeadBusinesses(
+								this,
+								businessesLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						default:

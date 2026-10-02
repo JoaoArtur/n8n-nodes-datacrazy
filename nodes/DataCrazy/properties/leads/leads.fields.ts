@@ -17,6 +17,70 @@ const leadsFields: INodeProperties[] = [
 		description: 'ID único do lead',
 	},
 
+	{
+		displayName: 'Opções',
+		name: 'subResourceOptions',
+		type: 'collection',
+		placeholder: 'Adicionar Opção',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['leads'],
+				operation: ['getActivities', 'getHistory', 'getBusinesses'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Pular (Skip)',
+				name: 'skip',
+				type: 'number',
+				default: 0,
+				description: 'Número de registros a pular',
+			},
+			{
+				displayName: 'Limite (Take)',
+				name: 'take',
+				type: 'number',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 50,
+				description: 'Max number of results to return',
+			},
+			{
+				displayName: 'Buscar',
+				name: 'search',
+				type: 'string',
+				default: '',
+				description: 'Termo de busca',
+			},
+			{
+				displayName: 'ID do Negócio',
+				name: 'businessId',
+				type: 'string',
+				displayOptions: {
+					show: {
+						'/operation': ['getHistory'],
+					},
+				},
+				default: '',
+				description: 'Filtrar histórico por negócio',
+			},
+			{
+				displayName: 'Comentário',
+				name: 'comment',
+				type: 'string',
+				displayOptions: {
+					show: {
+						'/operation': ['getHistory'],
+					},
+				},
+				default: '',
+				description: 'Filtrar histórico por texto do comentário',
+			},
+		],
+	},
+
 	// Create and Update Lead Fields
 	{
 		displayName: 'Nome',
