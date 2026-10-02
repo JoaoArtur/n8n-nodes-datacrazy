@@ -99,6 +99,14 @@ export function buildLeadData(parameters: any): ILead {
 		if (additional.taxId) leadData.taxId = additional.taxId;
 		if (additional.site) leadData.site = additional.site;
 		if (additional.instagram) leadData.instagram = additional.instagram;
+		if (additional.type) leadData.type = additional.type;
+		if (additional.birthDate) leadData.birthDate = formatDateToISO(additional.birthDate);
+		if (additional.displayName) leadData.displayName = additional.displayName;
+		if (additional.sector) leadData.sector = additional.sector;
+		if (additional.role) leadData.role = additional.role;
+		if (additional.notes) leadData.notes = additional.notes;
+		if (additional.parentId) leadData.parentId = additional.parentId;
+		if (additional.primaryContactLeadId) leadData.primaryContactLeadId = additional.primaryContactLeadId;
 
 		// Handle address
 		if (additional.address?.addressDetails) {
@@ -141,6 +149,7 @@ export function buildLeadQueryParams(options: any): any {
 	if (options.skip !== undefined) queryParams.skip = options.skip;
 	if (options.take !== undefined) queryParams.take = options.take;
 	if (options.search) queryParams.search = options.search;
+	if (options.searchType) queryParams.searchType = options.searchType;
 
 	// Opções de complete
 	if (options.complete?.completeOptions) {
@@ -158,6 +167,18 @@ export function buildLeadQueryParams(options: any): any {
 			// Filtro de tags - usar diretamente as tags selecionadas
 			if (filterItem.tags && Array.isArray(filterItem.tags) && filterItem.tags.length > 0) {
 				queryParams.filter.tags = filterItem.tags.join(',');
+			}
+			if (filterItem.type) {
+				queryParams.filter.type = filterItem.type;
+			}
+			if (filterItem.role && filterItem.role.trim()) {
+				queryParams.filter.role = filterItem.role.trim();
+			}
+			if (filterItem.company && filterItem.company.trim()) {
+				queryParams.filter.company = filterItem.company.trim();
+			}
+			if (filterItem.excludeIds && filterItem.excludeIds.trim()) {
+				queryParams.filter.excludeIds = filterItem.excludeIds.trim();
 			}
 			if (filterItem.stages && filterItem.stages.trim()) {
 				queryParams.filter.stages = filterItem.stages.trim();
