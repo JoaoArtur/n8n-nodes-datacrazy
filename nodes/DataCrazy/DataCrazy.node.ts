@@ -557,7 +557,6 @@ export class DataCrazy implements INodeType {
 								: idsString.split(',').map((id) => id.trim());
 							const moveActionData = buildMoveActionData({
 								ids,
-								destinationPipelineId: this.getNodeParameter('destinationPipelineId', i) as string,
 								destinationStageId: this.getNodeParameter('destinationStageId', i) as string,
 								...(this.getNodeParameter('additionalFields', i) as object),
 							});
