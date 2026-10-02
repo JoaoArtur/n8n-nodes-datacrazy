@@ -27,6 +27,8 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
+    "test": "tsc -p tsconfig.test.json && node --test \".test-dist/test/unit/**/*.test.js\"",
+    "test:integration": "tsc -p tsconfig.test.json && node --test --test-concurrency=1 \".test-dist/test/integration/**/*.test.js\"",
     "prepublishOnly": "pnpm build && pnpm lint"
   },
   "files": [
