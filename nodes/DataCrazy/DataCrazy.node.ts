@@ -120,6 +120,13 @@ import {
 	buildProductData,
 	buildProductQueryParams,
 } from './properties/products';
+import {
+	getDealAttachments,
+	createDealAttachment,
+	deleteDealAttachments,
+	buildDealAttachmentData,
+	parseDealAttachmentIds,
+} from './properties/deal-attachments';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -936,6 +943,41 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteProductId = this.getNodeParameter('productId', i) as string;
 							responseData = await deleteProduct.call(this, deleteProductId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'dealAttachments') {
+					const dealAttachmentDealId = this.getNodeParameter('dealAttachmentDealId', i) as string;
+
+					switch (operation) {
+						case 'getAll':
+							responseData = await getDealAttachments.call(this, dealAttachmentDealId);
+							break;
+
+						case 'create':
+							const dealAttachmentData = buildDealAttachmentData({
+								attachmentUrl: this.getNodeParameter('dealAttachmentUrl', i) as string,
+								fileName: this.getNodeParameter('dealAttachmentFileName', i) as string,
+								description: this.getNodeParameter('dealAttachmentDescription', i, '') as string,
+							});
+							responseData = await createDealAttachment.call(this, dealAttachmentDealId, dealAttachmentData);
+							break;
+
+						case 'delete':
+							const dealAttachmentIds = parseDealAttachmentIds(
+								this.getNodeParameter('dealAttachmentIds', i) as string,
+							);
+							if (dealAttachmentIds.length === 0) {
+								throw new NodeOperationError(this.getNode(), 'Informe ao menos um ID de anexo', {
+									itemIndex: i,
+								});
+							}
+							responseData = await deleteDealAttachments.call(this, dealAttachmentDealId, dealAttachmentIds);
 							break;
 
 						default:
