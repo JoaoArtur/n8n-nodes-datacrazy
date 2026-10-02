@@ -2,6 +2,7 @@ import type { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 import type {
 	IPipelineQueryParams,
 	IPipelineListResponse,
+	IPipelineResponse,
 	IStage,
 	IStagesResponse,
 } from './pipelines.types';
@@ -19,6 +20,21 @@ export async function getAllPipelines(
 		return response as IPipelineListResponse;
 	} catch (error: any) {
 		throw new Error(`Erro ao buscar pipelines: ${error.message}`);
+	}
+}
+
+/**
+ * Busca um pipeline por ID
+ */
+export async function getPipelineById(
+	this: IExecuteFunctions,
+	pipelineId: string,
+): Promise<IPipelineResponse> {
+	try {
+		const response = await request(this, 'GET', `/pipelines/${pipelineId}`);
+		return response as IPipelineResponse;
+	} catch (error: any) {
+		throw new Error(`Erro ao buscar pipeline: ${error.message}`);
 	}
 }
 

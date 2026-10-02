@@ -82,6 +82,7 @@ import {
 import {
 	getAllPipelines,
 	buildPipelineQueryParams,
+	getPipelineById,
 	getPipelineStages,
 	getPipelineStagesForLoadOptions,
 } from './properties/pipelines';
@@ -630,6 +631,11 @@ export class DataCrazy implements INodeType {
 							const queryParams = buildPipelineQueryParams(take, skip, search || undefined);
 
 							responseData = await getAllPipelines.call(this, queryParams);
+							break;
+
+						case 'get':
+							const getPipelineId = this.getNodeParameter('pipelineId', i) as string;
+							responseData = await getPipelineById.call(this, getPipelineId);
 							break;
 
 						case 'getStages':

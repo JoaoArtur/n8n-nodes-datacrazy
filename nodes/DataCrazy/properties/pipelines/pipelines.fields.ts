@@ -53,9 +53,10 @@ export const pipelineId: INodeProperties = {
 	required: true,
 	displayOptions: {
 		show: {
-			operation: ['getStages'],
+			resource: ['pipelines'],
+			operation: ['get', 'getStages'],
 		},
 	},
 	default: '',
-	description: 'Selecione o pipeline para listar os estágios',
+	description: 'Selecione o pipeline',
 };
