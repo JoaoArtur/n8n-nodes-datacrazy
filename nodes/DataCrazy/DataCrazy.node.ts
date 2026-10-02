@@ -88,7 +88,16 @@ import {
 	getPipelineStagesForLoadOptions,
 } from './properties/pipelines';
 import type { IStage } from './properties/pipelines/pipelines.types';
-import { getBusinessLossReasonsForLoadOptions } from './properties/business-loss-reasons';
+import {
+	getBusinessLossReasonsForLoadOptions,
+	getAllLossReasons,
+	createLossReason,
+	getLossReasonById,
+	updateLossReason,
+	deleteLossReason,
+	buildLossReasonData,
+	buildLossReasonQueryParams,
+} from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
 import { getAttendantsForLoadOptions } from './properties/attendants-crm';
 import { getInstancesForLoadOptions } from './properties/instances';
@@ -978,6 +987,48 @@ export class DataCrazy implements INodeType {
 								});
 							}
 							responseData = await deleteDealAttachments.call(this, dealAttachmentDealId, dealAttachmentIds);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'lossReasons') {
+					switch (operation) {
+						case 'getAll':
+							const lossReasonQueryParams = buildLossReasonQueryParams({
+								skip: this.getNodeParameter('lossReasonSkip', i, 0) as number,
+								take: this.getNodeParameter('lossReasonTake', i, 50) as number,
+							});
+							responseData = await getAllLossReasons.call(this, lossReasonQueryParams);
+							break;
+
+						case 'create':
+							const createLossReasonData = buildLossReasonData({
+								name: this.getNodeParameter('lossReasonName', i) as string,
+								requiredJustification: this.getNodeParameter('lossReasonRequiredJustification', i, false) as boolean,
+							}) as any;
+							responseData = await createLossReason.call(this, createLossReasonData);
+							break;
+
+						case 'get':
+							const lossReasonRecordId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							responseData = await getLossReasonById.call(this, lossReasonRecordId);
+							break;
+
+						case 'update':
+							const updateLossReasonId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							const updateLossReasonData = buildLossReasonData({
+								...(this.getNodeParameter('lossReasonUpdateFields', i) as object),
+							});
+							responseData = await updateLossReason.call(this, updateLossReasonId, updateLossReasonData);
+							break;
+
+						case 'delete':
+							const deleteLossReasonId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							responseData = await deleteLossReason.call(this, deleteLossReasonId);
 							break;
 
 						default:

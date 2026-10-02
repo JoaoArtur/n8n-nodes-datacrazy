@@ -25,3 +25,18 @@ export interface IBusinessLossReasonsQueryParams {
 	search?: string;
 	[key: string]: any; // Index signature para compatibilidade com IDataObject
 }
+/**
+ * Interface para criação de motivo de perda
+ */
+export interface IBusinessLossReasonCreate {
+	name: string;
+	requiredJustification?: boolean;
+}
+
+/**
+ * Interface para atualização de motivo de perda
+ */
+export interface IBusinessLossReasonUpdate {
+	name?: string;
+	requiredJustification?: boolean;
+}
