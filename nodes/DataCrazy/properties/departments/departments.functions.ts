@@ -1,5 +1,5 @@
 import { ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { requestForLoadOptions } from '../../GenericFunctions';
+import { API_HOST, requestForLoadOptions } from '../../GenericFunctions';
 import type { IDepartmentsResponse } from './departments.types';
 
 export async function getDepartmentsForLoadOptions(
@@ -8,15 +8,15 @@ export async function getDepartmentsForLoadOptions(
 	const queryParams = {
 		take: 100,
 		skip: 0,
-		url: '/departments',
 	};
 
 	const response = await requestForLoadOptions(
 		this,
 		'GET',
-		'/api/messaging/departments',
-		{},
+		'/departments',
+		undefined,
 		queryParams,
+		`${API_HOST}/api/messaging`,
 	);
 
 	const departmentsResponse = response as IDepartmentsResponse;

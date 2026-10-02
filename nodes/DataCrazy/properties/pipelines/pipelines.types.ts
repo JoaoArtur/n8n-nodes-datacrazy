@@ -24,11 +24,11 @@ export interface IPipeline {
 	id: string;
 	name: string;
 	description?: string;
-	isActive: boolean;
-	isDefault: boolean;
+	group?: string;
+	stagesCount?: number;
 	createdAt: string;
 	updatedAt: string;
-	stages?: IStage[];
+	deletedAt?: string | null;
 }
 
 /**
@@ -44,18 +44,14 @@ export interface IPipelineQueryParams {
 /**
  * Interface para resposta da API de pipeline único
  */
-export interface IPipelineResponse {
-	success: boolean;
-	data: IPipeline;
-	message?: string;
+export interface IPipelineResponse extends IPipeline {
+	permissions?: Record<string, unknown>;
 }
 
 /**
  * Interface para resposta da API de lista de pipelines
  */
 export interface IPipelineListResponse {
-	success: boolean;
+	count: number;
 	data: IPipeline[];
-	total: number;
-	message?: string;
 }

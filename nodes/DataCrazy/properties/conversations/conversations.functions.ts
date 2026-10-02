@@ -29,8 +29,7 @@ export async function finishConversation(
 	context: IExecuteFunctions,
 	conversationId: string,
 ): Promise<any> {
-	const messagingBaseUrl = 'https://messaging.g1.datacrazy.io/api/messaging';
-	return await request(context, 'POST', `/conversations/${conversationId}/finish`, undefined, undefined, messagingBaseUrl);
+	return await request(context, 'POST', `/conversations/${conversationId}/finish`);
 }
 
 export function buildConversationQueryParams(options: any): any {
