@@ -99,7 +99,14 @@ import {
 	buildLossReasonQueryParams,
 } from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
-import { getAttendantsForLoadOptions } from './properties/attendants-crm';
+import {
+	getAttendantsForLoadOptions,
+	getAllCrmAttendants,
+	getCrmAttendantById,
+	getAllMultiAttendants,
+	getMultiAttendantById,
+	buildMultiAttendantsQueryParams,
+} from './properties/attendants-crm';
 import {
 	getInstancesForLoadOptions,
 	getAllInstances,
@@ -1050,6 +1057,35 @@ export class DataCrazy implements INodeType {
 						case 'get':
 							const instanceId = this.getNodeParameter('instanceId', i) as string;
 							responseData = await getInstanceById.call(this, instanceId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'attendants') {
+					switch (operation) {
+						case 'getAllCrm':
+							responseData = await getAllCrmAttendants.call(this);
+							break;
+
+						case 'getCrm':
+							const attendantId = this.getNodeParameter('attendantId', i) as string;
+							responseData = await getCrmAttendantById.call(this, attendantId);
+							break;
+
+						case 'getAllMulti':
+							const multiAttendantsQueryParams = buildMultiAttendantsQueryParams({
+								search: this.getNodeParameter('attendantMultiSearch', i, '') as string,
+							});
+							responseData = await getAllMultiAttendants.call(this, multiAttendantsQueryParams);
+							break;
+
+						case 'getMulti':
+							const attendantMultiId = this.getNodeParameter('attendantMultiId', i) as string;
+							responseData = await getMultiAttendantById.call(this, attendantMultiId);
 							break;
 
 						default:

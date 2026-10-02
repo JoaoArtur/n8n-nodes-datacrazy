@@ -17,3 +17,6 @@ export interface IAttendantsResponse {
 	page?: number;
 	limit?: number;
 }
+export interface IAttendantsMultiQueryParams {
+	search?: string;
+}
