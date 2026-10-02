@@ -29,9 +29,9 @@ import {
 	updateDeal,
 	deleteDeal,
 	buildDealData,
-	buildDealQueryParams,
 	getDealsByStage,
 } from './properties/deals';
+import type { IDealQueryParams } from './properties/deals/deals.types';
 import {
 	getLeadAttachments,
 	createLeadAttachment,
@@ -435,7 +435,7 @@ export class DataCrazy implements INodeType {
 				} else if (resource === 'deals') {
 					switch (operation) {
 						case 'getAll':
-							const dealQueryParams = buildDealQueryParams(this.getNodeParameter('options', i, {}));
+							const dealQueryParams = this.getNodeParameter('options', i, {}) as IDealQueryParams;
 							responseData = await getAllDeals.call(this, dealQueryParams);
 							break;
 
@@ -443,7 +443,7 @@ export class DataCrazy implements INodeType {
 							const stageId = this.getNodeParameter('stageId', i) as string;
 							const take = this.getNodeParameter('take', i, 100) as number;
 							const skip = this.getNodeParameter('skip', i, 0) as number;
-							const stageQueryParams = buildDealQueryParams(this.getNodeParameter('options', i, {}));
+							const stageQueryParams = this.getNodeParameter('options', i, {}) as IDealQueryParams;
 							responseData = await getDealsByStage.call(this, stageId, take, skip, stageQueryParams);
 							break;
 
