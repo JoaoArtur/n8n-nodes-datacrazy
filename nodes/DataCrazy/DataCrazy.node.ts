@@ -111,6 +111,15 @@ import {
 	buildListData,
 	buildListQueryParams,
 } from './properties/lists';
+import {
+	getAllProducts,
+	createProduct,
+	getProductById,
+	updateProduct,
+	deleteProduct,
+	buildProductData,
+	buildProductQueryParams,
+} from './properties/products';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -885,6 +894,48 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteListId = this.getNodeParameter('listId', i) as string;
 							responseData = await deleteList.call(this, deleteListId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'products') {
+					switch (operation) {
+						case 'getAll':
+							const productQueryParams = buildProductQueryParams(
+								this.getNodeParameter('productOptions', i, {}) as object,
+							);
+							responseData = await getAllProducts.call(this, productQueryParams);
+							break;
+
+						case 'create':
+							const createProductData = buildProductData({
+								...(this.getNodeParameter('productAdditionalFields', i, {}) as object),
+								name: this.getNodeParameter('productName', i) as string,
+								price: this.getNodeParameter('productPrice', i) as number,
+							}) as any;
+							responseData = await createProduct.call(this, createProductData);
+							break;
+
+						case 'get':
+							const productId = this.getNodeParameter('productId', i) as string;
+							responseData = await getProductById.call(this, productId);
+							break;
+
+						case 'update':
+							const updateProductId = this.getNodeParameter('productId', i) as string;
+							const updateProductData = buildProductData({
+								...(this.getNodeParameter('productAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateProduct.call(this, updateProductId, updateProductData);
+							break;
+
+						case 'delete':
+							const deleteProductId = this.getNodeParameter('productId', i) as string;
+							responseData = await deleteProduct.call(this, deleteProductId);
 							break;
 
 						default:
