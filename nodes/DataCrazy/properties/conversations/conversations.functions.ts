@@ -67,12 +67,6 @@ export function buildConversationQueryParams(options: any): any {
 		console.log('✅ [DEBUG] Adicionado search:', search);
 	}
 
-	// Processar pipeline como filtro se fornecido
-	if (pipeline !== undefined && pipeline !== null && pipeline !== '') {
-		queryParams['filter[pipeline]'] = pipeline;
-		console.log('✅ [DEBUG] Adicionado filter[pipeline]:', pipeline);
-	}
-
 	// Processar stages como filtro se fornecido
 	if (stages !== undefined && stages !== null && stages !== '') {
 		queryParams['filter[stages]'] = stages;
@@ -93,13 +87,17 @@ export function buildConversationQueryParams(options: any): any {
 
 				if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
 					// Mapear campos para os nomes corretos da API
+					// Nomes da UI mantidos por compatibilidade com workflows salvos
 					const fieldMap: { [key: string]: string } = {
-						initialized: 'initialized',
-						department: 'department',
-						instanceId: 'instanceId',
-						tags: 'tags',
-						attendant: 'attendant',
+						department: 'departments',
+						instanceId: 'instances',
+						attendant: 'attendants',
 					};
+
+					// Filtro removido da API pública
+					if (fieldName === 'initialized') {
+						return;
+					}
 
 					const apiField = fieldMap[fieldName] || fieldName;
 					console.log(`🔍 [DEBUG] Campo mapeado: ${fieldName} -> ${apiField}`);
@@ -160,12 +158,10 @@ export function buildMessageData(parameters: any, context?: IExecuteFunctions): 
 		// Para mensagens de mídia, seguir formato específico com attachments
 		if (parameters.attachmentUrl) {
 			const attachment: any = {
-				file: {},
 				fileName: parameters.fileName || `file.${getFileExtensionByType(messageType)}`,
 				mimeType: parameters.mimeType || getMimeTypeByType(messageType),
 				type: messageType,
 				url: parameters.attachmentUrl,
-				size: parameters.fileSize || 0
 			};
 
 			// Criar payload com attachments e isInternal
