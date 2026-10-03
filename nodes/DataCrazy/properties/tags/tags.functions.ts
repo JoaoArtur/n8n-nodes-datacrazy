@@ -31,6 +31,11 @@ export async function getTagById(this: IExecuteFunctions, tagId: string): Promis
  */
 export async function updateTag(this: IExecuteFunctions, tagId: string, tagData: ITagUpdate): Promise<ITag> {
 	const endpoint = `/tags/${tagId}`;
+	// A API responde "tag-name-already-exists" quando o PUT vem sem name.
+	if (!tagData.name) {
+		const current: ITag = await request(this, 'GET', endpoint);
+		tagData = { ...tagData, name: current.name };
+	}
 	return await request(this, 'PUT', endpoint, tagData);
 }
 

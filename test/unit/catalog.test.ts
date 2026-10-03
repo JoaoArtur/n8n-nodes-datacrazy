@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { BASE, single } from '../helpers/context';
+import { BASE, runNode, single } from '../helpers/context';
 
 describe('tags', () => {
 	it('CRUD e contagem de leads', async () => {
@@ -29,6 +29,21 @@ describe('tags', () => {
 
 		const count = await single({ resource: 'tags', operation: 'getLeadsCount', tagId: 'T' });
 		assert.equal(`${count.method} ${count.url}`, `GET ${BASE}/tags/T/leads-count`);
+	});
+});
+
+describe('tags: update sem nome', () => {
+	// A API rejeita PUT sem name ("tag-name-already-exists"); o node completa com o nome atual.
+	it('busca o nome atual antes do PUT', async () => {
+		const { requests } = await runNode(
+			{ resource: 'tags', operation: 'update', tagId: 'T', additionalFields: { description: 'nova' } },
+			{ responder: (req) => (req.method === 'GET' ? { id: 'T', name: 'VIP' } : {}) },
+		);
+		assert.deepEqual(
+			requests.map((r) => `${r.method} ${r.url}`),
+			[`GET ${BASE}/tags/T`, `PUT ${BASE}/tags/T`],
+		);
+		assert.deepEqual(requests[1].body, { name: 'VIP', description: 'nova' });
 	});
 });
 
