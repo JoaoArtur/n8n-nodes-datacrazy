@@ -13,16 +13,18 @@ describe('attachments (lead)', () => {
 			leadId: 'L',
 			attachmentUrl: 'https://x/a.png',
 			fileName: 'a.png',
+			fileSize: 100,
 			description: 'foto',
 		});
 		assert.equal(`${create.method} ${create.url}`, `POST ${BASE}/leads/L/attachments`);
-		assert.deepEqual(create.body, { attachmentUrl: 'https://x/a.png', fileName: 'a.png', description: 'foto' });
+		assert.deepEqual(create.body, { attachmentUrl: 'https://x/a.png', fileName: 'a.png', fileSize: 100, description: 'foto' });
 
 		const del = await single({ resource: 'attachments', operation: 'delete', leadId: 'L', attachmentId: 'AT' });
 		assert.equal(`${del.method} ${del.url}`, `DELETE ${BASE}/leads/L/attachments/AT`);
 	});
 
-	it('create não envia fileSize', async () => {
+	// A API exige fileSize (ausente no OpenAPI); sem ele retorna erro do Prisma.
+	it('create envia fileSize', async () => {
 		const req = await single({
 			resource: 'attachments',
 			operation: 'create',
@@ -31,7 +33,7 @@ describe('attachments (lead)', () => {
 			fileName: 'f',
 			fileSize: 123,
 		});
-		assert.deepEqual(req.body, { attachmentUrl: 'u', fileName: 'f' });
+		assert.deepEqual(req.body, { attachmentUrl: 'u', fileName: 'f', fileSize: 123 });
 	});
 });
 

@@ -3,6 +3,7 @@ export interface IAttachment {
 	id?: string;
 	attachmentUrl: string;
 	fileName: string;
+	fileSize: number;
 	description?: string;
 	leadId?: string;
 	createdAt?: string;
@@ -12,5 +13,6 @@ export interface IAttachment {
 export interface IAttachmentCreate {
 	attachmentUrl: string;
 	fileName: string;
+	fileSize: number;
 	description?: string;
 }

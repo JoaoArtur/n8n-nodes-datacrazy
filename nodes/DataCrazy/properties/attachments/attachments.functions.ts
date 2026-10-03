@@ -31,6 +31,7 @@ export function buildAttachmentData(parameters: any): IAttachmentCreate {
 	const attachmentData: IAttachmentCreate = {
 		attachmentUrl: parameters.attachmentUrl,
 		fileName: parameters.fileName,
+		fileSize: typeof parameters.fileSize === 'string' ? parseInt(parameters.fileSize, 10) : parameters.fileSize,
 	};
 
 	// Add optional fields

@@ -567,6 +567,7 @@ export class DataCrazy implements INodeType {
 							const attachmentData = buildAttachmentData({
 								attachmentUrl: this.getNodeParameter('attachmentUrl', i) as string,
 								fileName: this.getNodeParameter('fileName', i) as string,
+								fileSize: this.getNodeParameter('fileSize', i) as number,
 								description: this.getNodeParameter('description', i, '') as string,
 							});
 							responseData = await createLeadAttachment(this, leadId, attachmentData);
