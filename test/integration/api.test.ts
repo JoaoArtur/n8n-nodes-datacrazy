@@ -87,7 +87,8 @@ describe('integração: leitura', { skip: skipRead }, () => {
 			await exec({
 				resource: 'leads',
 				operation: 'getAll',
-				options: { take: 1, search: 'a', searchType: 'name', filters: [{ type: 'PERSON' }] },
+				// A API exige busca com no mínimo 4 caracteres.
+				options: { take: 1, search: 'joao', searchType: 'name', filters: [{ type: 'PERSON' }] },
 			}),
 		);
 	});
