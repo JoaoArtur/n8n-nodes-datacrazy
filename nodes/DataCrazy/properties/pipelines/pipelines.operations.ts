@@ -19,6 +19,12 @@ export const pipelinesOperations: INodeProperties[] = [
 				action: 'Listar todos os pipelines',
 			},
 			{
+				name: 'Buscar por ID',
+				value: 'get',
+				description: 'Busca um pipeline específico por ID',
+				action: 'Buscar pipeline por ID',
+			},
+			{
 				name: 'Listar Estágios',
 				value: 'getStages',
 				description: 'Lista os estágios de um pipeline específico',

@@ -8,14 +8,13 @@ export async function getDepartmentsForLoadOptions(
 	const queryParams = {
 		take: 100,
 		skip: 0,
-		url: '/departments',
 	};
 
 	const response = await requestForLoadOptions(
 		this,
 		'GET',
-		'/api/messaging/departments',
-		{},
+		'/messaging/departments',
+		undefined,
 		queryParams,
 	);
 

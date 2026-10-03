@@ -4,7 +4,6 @@
 
 export interface IDealActionMove {
 	ids: string[];
-	destinationPipelineId: string;
 	destinationStageId: string;
 }
 

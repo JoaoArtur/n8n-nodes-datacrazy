@@ -32,7 +32,7 @@ export class DataCrazyCredentials implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.datacrazy.io/v1/api/api/v1',
+			baseURL: 'https://api.g1.datacrazy.io/api/v1',
 			url: '/leads',
 			method: 'GET',
 		},

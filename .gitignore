@@ -2,3 +2,5 @@ dist
 node_modules
 .claude
 .trae
+.test-dist
+CHANGELOG.md

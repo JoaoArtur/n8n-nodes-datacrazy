@@ -17,6 +17,70 @@ const leadsFields: INodeProperties[] = [
 		description: 'ID único do lead',
 	},
 
+	{
+		displayName: 'Opções',
+		name: 'subResourceOptions',
+		type: 'collection',
+		placeholder: 'Adicionar Opção',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['leads'],
+				operation: ['getActivities', 'getHistory', 'getBusinesses'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Pular (Skip)',
+				name: 'skip',
+				type: 'number',
+				default: 0,
+				description: 'Número de registros a pular',
+			},
+			{
+				displayName: 'Limite (Take)',
+				name: 'take',
+				type: 'number',
+				typeOptions: {
+					minValue: 1,
+				},
+				default: 50,
+				description: 'Max number of results to return',
+			},
+			{
+				displayName: 'Buscar',
+				name: 'search',
+				type: 'string',
+				default: '',
+				description: 'Termo de busca',
+			},
+			{
+				displayName: 'ID do Negócio',
+				name: 'businessId',
+				type: 'string',
+				displayOptions: {
+					show: {
+						'/operation': ['getHistory'],
+					},
+				},
+				default: '',
+				description: 'Filtrar histórico por negócio',
+			},
+			{
+				displayName: 'Comentário',
+				name: 'comment',
+				type: 'string',
+				displayOptions: {
+					show: {
+						'/operation': ['getHistory'],
+					},
+				},
+				default: '',
+				description: 'Filtrar histórico por texto do comentário',
+			},
+		],
+	},
+
 	// Create and Update Lead Fields
 	{
 		displayName: 'Nome',
@@ -106,6 +170,66 @@ const leadsFields: INodeProperties[] = [
 				description: 'URL da imagem do lead',
 			},
 			{
+				displayName: 'Tipo',
+				name: 'type',
+				type: 'options',
+				options: [
+					{ name: 'Pessoa', value: 'PERSON' },
+					{ name: 'Empresa', value: 'COMPANY' },
+				],
+				default: 'PERSON',
+				description: 'Tipo do lead',
+			},
+			{
+				displayName: 'Data de Nascimento',
+				name: 'birthDate',
+				type: 'dateTime',
+				default: '',
+				description: 'Data de nascimento do lead',
+			},
+			{
+				displayName: 'Nome de Exibição',
+				name: 'displayName',
+				type: 'string',
+				default: '',
+				description: 'Nome de exibição do lead',
+			},
+			{
+				displayName: 'Setor',
+				name: 'sector',
+				type: 'string',
+				default: '',
+				description: 'Setor de atuação',
+			},
+			{
+				displayName: 'Cargo',
+				name: 'role',
+				type: 'string',
+				default: '',
+				description: 'Cargo do lead',
+			},
+			{
+				displayName: 'Notas',
+				name: 'notes',
+				type: 'string',
+				default: '',
+				description: 'Notas/observações do lead',
+			},
+			{
+				displayName: 'ID do Lead Pai',
+				name: 'parentId',
+				type: 'string',
+				default: '',
+				description: 'ID do lead pai',
+			},
+			{
+				displayName: 'ID do Contato Principal',
+				name: 'primaryContactLeadId',
+				type: 'string',
+				default: '',
+				description: 'ID do lead contato principal (quando tipo Empresa)',
+			},
+			{
 				displayName: 'CPF/CNPJ',
 				name: 'taxId',
 				type: 'string',
@@ -152,6 +276,20 @@ const leadsFields: INodeProperties[] = [
 								type: 'string',
 								default: '',
 								description: 'Logradouro',
+							},
+							{
+								displayName: 'Número',
+								name: 'number',
+								type: 'string',
+								default: '',
+								description: 'Número',
+							},
+							{
+								displayName: 'Complemento',
+								name: 'complement',
+								type: 'string',
+								default: '',
+								description: 'Complemento',
 							},
 							{
 								displayName: 'Bairro',
@@ -330,6 +468,19 @@ const leadsFields: INodeProperties[] = [
 				default: '',
 				description: 'Termo de busca para filtrar leads',
 			},
+			{
+				displayName: 'Tipo de Busca',
+				name: 'searchType',
+				type: 'options',
+				options: [
+					{ name: 'CPF/CNPJ', value: 'taxId' },
+					{ name: 'Email', value: 'email' },
+					{ name: 'Nome', value: 'name' },
+					{ name: 'Telefone', value: 'phone' },
+				],
+				default: 'name',
+				description: 'Campo usado pelo termo de busca',
+			},
 			// Opções de complete
 			{
 				displayName: 'Incluir Campos Adicionais',
@@ -375,6 +526,38 @@ const leadsFields: INodeProperties[] = [
 						},
 						default: [],
 						description: 'Selecione as tags para filtrar',
+					},
+					{
+						displayName: 'Tipo',
+						name: 'type',
+						type: 'options',
+						options: [
+							{ name: 'Pessoa', value: 'PERSON' },
+							{ name: 'Empresa', value: 'COMPANY' },
+						],
+						default: 'PERSON',
+						description: 'Tipo do lead',
+					},
+					{
+						displayName: 'Cargo',
+						name: 'role',
+						type: 'string',
+						default: '',
+						description: 'Cargo do lead',
+					},
+					{
+						displayName: 'Empresa',
+						name: 'company',
+						type: 'string',
+						default: '',
+						description: 'Empresa relacionada ao lead',
+					},
+					{
+						displayName: 'Excluir IDs',
+						name: 'excludeIds',
+						type: 'string',
+						default: '',
+						description: 'IDs de leads a excluir da busca, separados por vírgula',
 					},
 					{
 						displayName: 'Estágios',

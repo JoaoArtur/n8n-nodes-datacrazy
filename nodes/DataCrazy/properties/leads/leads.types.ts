@@ -7,6 +7,8 @@ export interface ILeadAddress {
 	city?: string;
 	state?: string;
 	country?: string;
+	number?: string;
+	complement?: string;
 }
 
 export interface ILeadSourceReferral {
@@ -38,6 +40,14 @@ export interface ILead {
 	taxId?: string;
 	site?: string;
 	instagram?: string;
+	birthDate?: string;
+	type?: 'PERSON' | 'COMPANY';
+	displayName?: string;
+	sector?: string;
+	role?: string;
+	notes?: string;
+	parentId?: string;
+	primaryContactLeadId?: string;
 	address?: ILeadAddress;
 	sourceReferral?: ILeadSourceReferral;
 	tags?: ILeadTag[];
@@ -51,6 +61,10 @@ export interface ILeadCompleteOptions {
 }
 
 export interface ILeadFilterOptions {
+	type?: 'PERSON' | 'COMPANY';
+	role?: string;
+	company?: string;
+	excludeIds?: string;
 	tags?: string;
 	stages?: string;
 	minLastPurchaseDate?: string;
@@ -77,4 +91,16 @@ export interface ILeadQueryParams {
 	complete?: ILeadCompleteOptions;
 	filter?: ILeadFilterOptions;
 	[key: string]: any;
+}
+
+export interface ILeadHistoryFilter {
+	businessId?: string;
+	comment?: string;
+}
+
+export interface ILeadSubResourceQueryParams {
+	skip?: number;
+	take?: number;
+	search?: string;
+	filter?: ILeadHistoryFilter;
 }

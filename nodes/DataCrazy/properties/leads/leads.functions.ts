@@ -1,6 +1,6 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { request } from '../../GenericFunctions';
-import { ILead, ILeadQueryParams } from './leads.types';
+import { ILead, ILeadHistoryFilter, ILeadQueryParams, ILeadSubResourceQueryParams } from './leads.types';
 
 // Função auxiliar para formatar data para ISO 8601
 function formatDateToISO(dateValue: string): string {
@@ -99,6 +99,14 @@ export function buildLeadData(parameters: any): ILead {
 		if (additional.taxId) leadData.taxId = additional.taxId;
 		if (additional.site) leadData.site = additional.site;
 		if (additional.instagram) leadData.instagram = additional.instagram;
+		if (additional.type) leadData.type = additional.type;
+		if (additional.birthDate) leadData.birthDate = formatDateToISO(additional.birthDate);
+		if (additional.displayName) leadData.displayName = additional.displayName;
+		if (additional.sector) leadData.sector = additional.sector;
+		if (additional.role) leadData.role = additional.role;
+		if (additional.notes) leadData.notes = additional.notes;
+		if (additional.parentId) leadData.parentId = additional.parentId;
+		if (additional.primaryContactLeadId) leadData.primaryContactLeadId = additional.primaryContactLeadId;
 
 		// Handle address
 		if (additional.address?.addressDetails) {
@@ -141,6 +149,7 @@ export function buildLeadQueryParams(options: any): any {
 	if (options.skip !== undefined) queryParams.skip = options.skip;
 	if (options.take !== undefined) queryParams.take = options.take;
 	if (options.search) queryParams.search = options.search;
+	if (options.searchType) queryParams.searchType = options.searchType;
 
 	// Opções de complete
 	if (options.complete?.completeOptions) {
@@ -158,6 +167,18 @@ export function buildLeadQueryParams(options: any): any {
 			// Filtro de tags - usar diretamente as tags selecionadas
 			if (filterItem.tags && Array.isArray(filterItem.tags) && filterItem.tags.length > 0) {
 				queryParams.filter.tags = filterItem.tags.join(',');
+			}
+			if (filterItem.type) {
+				queryParams.filter.type = filterItem.type;
+			}
+			if (filterItem.role && filterItem.role.trim()) {
+				queryParams.filter.role = filterItem.role.trim();
+			}
+			if (filterItem.company && filterItem.company.trim()) {
+				queryParams.filter.company = filterItem.company.trim();
+			}
+			if (filterItem.excludeIds && filterItem.excludeIds.trim()) {
+				queryParams.filter.excludeIds = filterItem.excludeIds.trim();
 			}
 			if (filterItem.stages && filterItem.stages.trim()) {
 				queryParams.filter.stages = filterItem.stages.trim();
@@ -221,46 +242,38 @@ export function buildLeadQueryParams(options: any): any {
 export async function getLeadActivities(
 	context: IExecuteFunctions,
 	leadId: string,
+	queryParams?: ILeadSubResourceQueryParams,
 ): Promise<any> {
-	return await request(context, 'GET', `/leads/${leadId}/activities`);
+	return await request(context, 'GET', `/leads/${leadId}/activities`, undefined, queryParams);
 }
 
 export async function getLeadHistory(
 	context: IExecuteFunctions,
 	leadId: string,
-	queryParams?: {
-		take?: number;
-		skip?: number;
-		types?: string;
-	}
+	queryParams?: ILeadSubResourceQueryParams,
 ): Promise<any> {
-	// Parâmetros padrão baseados na URL fornecida
-	const defaultParams = {
-		take: 10,
-		skip: 0,
-		url: '/history',
-		filter: {
-			types: queryParams?.types || '',
-			leadId: leadId
-		}
-	};
-
-	// Mesclar com parâmetros fornecidos
-	const finalParams = {
-		...defaultParams,
-		...(queryParams?.take !== undefined && { take: queryParams.take }),
-		...(queryParams?.skip !== undefined && { skip: queryParams.skip }),
-	};
-
-	// Usar a nova base URL específica para histórico
-	const baseUrl = 'https://crm.g1.datacrazy.io/api/crm';
-	
-	return await request(context, 'GET', '/history', undefined, finalParams, baseUrl);
+	return await request(context, 'GET', `/leads/${leadId}/history`, undefined, queryParams);
 }
 
 export async function getLeadBusinesses(
 	context: IExecuteFunctions,
 	leadId: string,
+	queryParams?: ILeadSubResourceQueryParams,
 ): Promise<any> {
-	return await request(context, 'GET', `/leads/${leadId}/businesses`);
+	return await request(context, 'GET', `/leads/${leadId}/businesses`, undefined, queryParams);
+}
+
+export function buildLeadSubResourceQueryParams(options: any): ILeadSubResourceQueryParams {
+	const queryParams: ILeadSubResourceQueryParams = {};
+
+	if (options.skip !== undefined) queryParams.skip = options.skip;
+	if (options.take !== undefined) queryParams.take = options.take;
+	if (options.search) queryParams.search = options.search;
+
+	const filter: ILeadHistoryFilter = {};
+	if (options.businessId) filter.businessId = options.businessId;
+	if (options.comment) filter.comment = options.comment;
+	if (Object.keys(filter).length > 0) queryParams.filter = filter;
+
+	return queryParams;
 }

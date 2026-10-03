@@ -22,7 +22,6 @@ export async function getBusinessLossReasonsForLoadOptions(
 			'/business-loss-reasons',
 			undefined,
 			defaultParams,
-			'https://api.datacrazy.io/v1/api/api/v1/crm/crm',
 		);
 		return response as IBusinessLossReasonsResponse;
 	} catch (error: any) {

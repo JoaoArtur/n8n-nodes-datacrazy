@@ -8,6 +8,13 @@ import { conversationsFields, conversationsOperations } from './conversations';
 import { additionalFieldsFields, additionalFieldsOperations } from './additional-fields';
 export * from './instances';
 import { dealActionsOperations, dealIds, destinationPipelineId, destinationStageId, lossReasonId, justification, additionalFields } from './deal-actions';
+import { activitiesFields, activitiesOperations } from './activities';
+import { listsFields, listsOperations } from './lists';
+import { productsFields, productsOperations } from './products';
+import { dealAttachmentsFields, dealAttachmentsOperations } from './deal-attachments';
+import { lossReasonsFields, lossReasonsOperations } from './business-loss-reasons';
+import { instancesFields, instancesOperations } from './instances';
+import { attendantsFields, attendantsOperations } from './attendants-crm';
 import { pipelinesOperations, pipelineTake, pipelineSkip, pipelineSearch, pipelineId } from './pipelines';
 
 const resourcesOptions: INodeProperties = {
@@ -49,6 +56,34 @@ const resourcesOptions: INodeProperties = {
 			value: 'pipelines',
 		},
 		{
+			name: 'Atividades',
+			value: 'activities',
+		},
+		{
+			name: 'Listas',
+			value: 'lists',
+		},
+		{
+			name: 'Produtos',
+			value: 'products',
+		},
+		{
+			name: 'Anexos de Negócio',
+			value: 'dealAttachments',
+		},
+		{
+			name: 'Motivos de Perda',
+			value: 'lossReasons',
+		},
+		{
+			name: 'Conexões',
+			value: 'instances',
+		},
+		{
+			name: 'Atendentes',
+			value: 'attendants',
+		},
+		{
 			name: 'Campos Adicionais',
 			value: 'additionalFields',
 		},
@@ -84,4 +119,18 @@ export const dataCrazyNodeProperties: INodeProperties[] = [
 	pipelineSkip,
 	pipelineSearch,
 	pipelineId,
+	...activitiesOperations,
+	...activitiesFields,
+	...listsOperations,
+	...listsFields,
+	...productsOperations,
+	...productsFields,
+	...dealAttachmentsOperations,
+	...dealAttachmentsFields,
+	...lossReasonsOperations,
+	...lossReasonsFields,
+	...instancesOperations,
+	...instancesFields,
+	...attendantsOperations,
+	...attendantsFields,
 ];

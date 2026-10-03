@@ -372,6 +372,13 @@ const dealsFields: INodeProperties[] = [
 						default: '',
 						description: 'Negócios movidos na data anterior (mais antigos) a informada ou na mesma data. Formato ISO 8601',
 					},
+					{
+						displayName: 'ID Externo',
+						name: 'externalId',
+						type: 'string',
+						default: '',
+						description: 'ID externo do negócio',
+					},
 				],
 			},
 		],

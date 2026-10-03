@@ -32,3 +32,7 @@ export interface ITagResponse {
 	page: number;
 	limit: number;
 }
+
+export interface ITagLeadsCount {
+	count: number;
+}

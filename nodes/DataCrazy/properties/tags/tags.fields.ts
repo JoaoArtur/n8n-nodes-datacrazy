@@ -13,7 +13,7 @@ export const tagsFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['tags'],
-				operation: ['get', 'update', 'delete'],
+				operation: ['get', 'update', 'delete', 'getLeadsCount'],
 			},
 		},
 		default: '',

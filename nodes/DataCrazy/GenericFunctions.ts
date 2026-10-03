@@ -1,5 +1,7 @@
 import { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 
+const API_HOST = 'https://api.g1.datacrazy.io';
+
 export async function request(
 	context: IExecuteFunctions,
 	method: string,
@@ -10,7 +12,7 @@ export async function request(
 ): Promise<any> {
 	const credentials = await context.getCredentials('dataCrazyCredentials');
 
-	let url = baseUrl || `https://api.datacrazy.io/v1/api/api/v1`;
+	let url = baseUrl || `${API_HOST}/api/v1`;
 	url += endpoint;
 
 	// Add query parameters if provided
@@ -71,7 +73,7 @@ export async function requestForLoadOptions(
 ): Promise<any> {
 	const credentials = await context.getCredentials('dataCrazyCredentials');
 
-	let url = baseUrl || `https://api.datacrazy.io/v1/api/api/v1`;
+	let url = baseUrl || `${API_HOST}/api/v1`;
 	url += endpoint;
 
 	// Add query parameters if provided

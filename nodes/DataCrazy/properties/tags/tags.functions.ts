@@ -1,6 +1,6 @@
 import { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 import { request, requestForLoadOptions } from '../../GenericFunctions';
-import { ITag, ITagCreate, ITagUpdate, ITagResponse } from './tags.types';
+import { ITag, ITagCreate, ITagUpdate, ITagResponse, ITagLeadsCount } from './tags.types';
 
 /**
  * Buscar todas as tags
@@ -31,6 +31,11 @@ export async function getTagById(this: IExecuteFunctions, tagId: string): Promis
  */
 export async function updateTag(this: IExecuteFunctions, tagId: string, tagData: ITagUpdate): Promise<ITag> {
 	const endpoint = `/tags/${tagId}`;
+	// A API responde "tag-name-already-exists" quando o PUT vem sem name.
+	if (!tagData.name) {
+		const current: ITag = await request(this, 'GET', endpoint);
+		tagData = { ...tagData, name: current.name };
+	}
 	return await request(this, 'PUT', endpoint, tagData);
 }
 
@@ -40,6 +45,14 @@ export async function updateTag(this: IExecuteFunctions, tagId: string, tagData:
 export async function deleteTag(this: IExecuteFunctions, tagId: string): Promise<void> {
 	const endpoint = `/tags/${tagId}`;
 	return await request(this, 'DELETE', endpoint);
+}
+
+/**
+ * Quantidade de leads com a tag
+ */
+export async function getTagLeadsCount(this: IExecuteFunctions, tagId: string): Promise<ITagLeadsCount> {
+	const endpoint = `/tags/${tagId}/leads-count`;
+	return await request(this, 'GET', endpoint);
 }
 
 /**

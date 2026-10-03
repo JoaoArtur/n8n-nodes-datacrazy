@@ -21,6 +21,7 @@ import {
 	getLeadActivities,
 	getLeadHistory,
 	getLeadBusinesses,
+	buildLeadSubResourceQueryParams,
 } from './properties/leads';
 import {
 	getAllDeals,
@@ -29,9 +30,9 @@ import {
 	updateDeal,
 	deleteDeal,
 	buildDealData,
-	buildDealQueryParams,
 	getDealsByStage,
 } from './properties/deals';
+import type { IDealQueryParams } from './properties/deals/deals.types';
 import {
 	getLeadAttachments,
 	createLeadAttachment,
@@ -51,6 +52,7 @@ import {
 	getTagById,
 	updateTag,
 	deleteTag,
+	getTagLeadsCount,
 	buildTagData,
 	getTagsForLoadOptions,
 } from './properties/tags';
@@ -81,15 +83,70 @@ import {
 import {
 	getAllPipelines,
 	buildPipelineQueryParams,
+	getPipelineById,
 	getPipelineStages,
 	getPipelineStagesForLoadOptions,
 } from './properties/pipelines';
 import type { IStage } from './properties/pipelines/pipelines.types';
-import { getBusinessLossReasonsForLoadOptions } from './properties/business-loss-reasons';
+import {
+	getBusinessLossReasonsForLoadOptions,
+	getAllLossReasons,
+	createLossReason,
+	getLossReasonById,
+	updateLossReason,
+	deleteLossReason,
+	buildLossReasonData,
+	buildLossReasonQueryParams,
+} from './properties/business-loss-reasons';
 import type { IBusinessLossReason } from './properties/business-loss-reasons/business-loss-reasons.types';
-import { getAttendantsForLoadOptions } from './properties/attendants-crm';
-import { getInstancesForLoadOptions } from './properties/instances';
+import {
+	getAttendantsForLoadOptions,
+	getAllCrmAttendants,
+	getCrmAttendantById,
+	getAllMultiAttendants,
+	getMultiAttendantById,
+	buildMultiAttendantsQueryParams,
+} from './properties/attendants-crm';
+import {
+	getInstancesForLoadOptions,
+	getAllInstances,
+	getInstanceById,
+} from './properties/instances';
 import { getDepartmentsForLoadOptions } from './properties/departments';
+import {
+	getAllActivities,
+	createActivity,
+	getActivityById,
+	updateActivity,
+	deleteActivity,
+	buildActivityData,
+	buildActivityQueryParams,
+} from './properties/activities';
+import {
+	getAllLists,
+	createList,
+	getListById,
+	updateList,
+	deleteList,
+	buildListData,
+	buildListQueryParams,
+} from './properties/lists';
+import {
+	getAllProducts,
+	createProduct,
+	getProductById,
+	updateProduct,
+	deleteProduct,
+	buildProductData,
+	buildProductQueryParams,
+} from './properties/products';
+import {
+	getDealAttachments,
+	createDealAttachment,
+	deleteDealAttachments,
+	buildDealAttachmentData,
+	parseDealAttachmentIds,
+} from './properties/deal-attachments';
 
 export class DataCrazy implements INodeType {
 	description: INodeTypeDescription = {
@@ -413,17 +470,29 @@ export class DataCrazy implements INodeType {
 
 						case 'getActivities':
 							const activitiesLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadActivities(this, activitiesLeadId);
+							responseData = await getLeadActivities(
+								this,
+								activitiesLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						case 'getHistory':
 							const historyLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadHistory(this, historyLeadId);
+							responseData = await getLeadHistory(
+								this,
+								historyLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						case 'getBusinesses':
 							const businessesLeadId = this.getNodeParameter('leadId', i) as string;
-							responseData = await getLeadBusinesses(this, businessesLeadId);
+							responseData = await getLeadBusinesses(
+								this,
+								businessesLeadId,
+								buildLeadSubResourceQueryParams(this.getNodeParameter('subResourceOptions', i, {})),
+							);
 							break;
 
 						default:
@@ -435,7 +504,7 @@ export class DataCrazy implements INodeType {
 				} else if (resource === 'deals') {
 					switch (operation) {
 						case 'getAll':
-							const dealQueryParams = buildDealQueryParams(this.getNodeParameter('options', i, {}));
+							const dealQueryParams = this.getNodeParameter('options', i, {}) as IDealQueryParams;
 							responseData = await getAllDeals.call(this, dealQueryParams);
 							break;
 
@@ -443,7 +512,7 @@ export class DataCrazy implements INodeType {
 							const stageId = this.getNodeParameter('stageId', i) as string;
 							const take = this.getNodeParameter('take', i, 100) as number;
 							const skip = this.getNodeParameter('skip', i, 0) as number;
-							const stageQueryParams = buildDealQueryParams(this.getNodeParameter('options', i, {}));
+							const stageQueryParams = this.getNodeParameter('options', i, {}) as IDealQueryParams;
 							responseData = await getDealsByStage.call(this, stageId, take, skip, stageQueryParams);
 							break;
 
@@ -558,7 +627,6 @@ export class DataCrazy implements INodeType {
 								: idsString.split(',').map((id) => id.trim());
 							const moveActionData = buildMoveActionData({
 								ids,
-								destinationPipelineId: this.getNodeParameter('destinationPipelineId', i) as string,
 								destinationStageId: this.getNodeParameter('destinationStageId', i) as string,
 								...(this.getNodeParameter('additionalFields', i) as object),
 							});
@@ -612,13 +680,18 @@ export class DataCrazy implements INodeType {
 				} else if (resource === 'pipelines') {
 					switch (operation) {
 						case 'getAll':
-							const take = this.getNodeParameter('limit', i, 500) as number;
+							const take = this.getNodeParameter('take', i, 500) as number;
 							const skip = this.getNodeParameter('skip', i, 0) as number;
 							const search = this.getNodeParameter('search', i, '') as string;
 
 							const queryParams = buildPipelineQueryParams(take, skip, search || undefined);
 
 							responseData = await getAllPipelines.call(this, queryParams);
+							break;
+
+						case 'get':
+							const getPipelineId = this.getNodeParameter('pipelineId', i) as string;
+							responseData = await getPipelineById.call(this, getPipelineId);
 							break;
 
 						case 'getStages':
@@ -663,6 +736,11 @@ export class DataCrazy implements INodeType {
 						case 'delete':
 							const deleteTagId = this.getNodeParameter('tagId', i) as string;
 							responseData = await deleteTag.call(this, deleteTagId);
+							break;
+
+						case 'getLeadsCount':
+							const countTagId = this.getNodeParameter('tagId', i) as string;
+							responseData = await getTagLeadsCount.call(this, countTagId);
 							break;
 
 						default:
@@ -762,6 +840,257 @@ export class DataCrazy implements INodeType {
 							const value = { value: rawValue };
 							
 							responseData = await setAdditionalFieldValue.call(this, scope, entityId, additionalFieldId, value);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'activities') {
+					switch (operation) {
+						case 'getAll':
+							const activityQueryParams = buildActivityQueryParams(
+								this.getNodeParameter('activityOptions', i, {}) as object,
+							);
+							responseData = await getAllActivities.call(this, activityQueryParams);
+							break;
+
+						case 'create':
+							const createActivityData = buildActivityData({
+								...(this.getNodeParameter('activityAdditionalFields', i, {}) as object),
+								title: this.getNodeParameter('activityTitle', i) as string,
+								leadId: this.getNodeParameter('activityLeadId', i) as string,
+								startDate: this.getNodeParameter('activityStartDate', i) as string,
+								endDate: this.getNodeParameter('activityEndDate', i) as string,
+							}) as any;
+							responseData = await createActivity.call(this, createActivityData);
+							break;
+
+						case 'get':
+							const activityId = this.getNodeParameter('activityId', i) as string;
+							responseData = await getActivityById.call(this, activityId);
+							break;
+
+						case 'update':
+							const updateActivityId = this.getNodeParameter('activityId', i) as string;
+							const updateActivityData = buildActivityData({
+								...(this.getNodeParameter('activityAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateActivity.call(this, updateActivityId, updateActivityData);
+							break;
+
+						case 'delete':
+							const deleteActivityId = this.getNodeParameter('activityId', i) as string;
+							responseData = await deleteActivity.call(this, deleteActivityId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'lists') {
+					switch (operation) {
+						case 'getAll':
+							const listQueryParams = buildListQueryParams(
+								this.getNodeParameter('listOptions', i, {}) as object,
+							);
+							responseData = await getAllLists.call(this, listQueryParams);
+							break;
+
+						case 'create':
+							const createListData = buildListData({
+								...(this.getNodeParameter('listAdditionalFields', i, {}) as object),
+								name: this.getNodeParameter('listName', i) as string,
+							}) as any;
+							responseData = await createList.call(this, createListData);
+							break;
+
+						case 'get':
+							const listId = this.getNodeParameter('listId', i) as string;
+							responseData = await getListById.call(this, listId);
+							break;
+
+						case 'update':
+							const updateListId = this.getNodeParameter('listId', i) as string;
+							const updateListData = buildListData({
+								...(this.getNodeParameter('listAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateList.call(this, updateListId, updateListData);
+							break;
+
+						case 'delete':
+							const deleteListId = this.getNodeParameter('listId', i) as string;
+							responseData = await deleteList.call(this, deleteListId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'products') {
+					switch (operation) {
+						case 'getAll':
+							const productQueryParams = buildProductQueryParams(
+								this.getNodeParameter('productOptions', i, {}) as object,
+							);
+							responseData = await getAllProducts.call(this, productQueryParams);
+							break;
+
+						case 'create':
+							const createProductData = buildProductData({
+								...(this.getNodeParameter('productAdditionalFields', i, {}) as object),
+								name: this.getNodeParameter('productName', i) as string,
+								price: this.getNodeParameter('productPrice', i) as number,
+							}) as any;
+							responseData = await createProduct.call(this, createProductData);
+							break;
+
+						case 'get':
+							const productId = this.getNodeParameter('productId', i) as string;
+							responseData = await getProductById.call(this, productId);
+							break;
+
+						case 'update':
+							const updateProductId = this.getNodeParameter('productId', i) as string;
+							const updateProductData = buildProductData({
+								...(this.getNodeParameter('productAdditionalFields', i, {}) as object),
+							});
+							responseData = await updateProduct.call(this, updateProductId, updateProductData);
+							break;
+
+						case 'delete':
+							const deleteProductId = this.getNodeParameter('productId', i) as string;
+							responseData = await deleteProduct.call(this, deleteProductId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'dealAttachments') {
+					const dealAttachmentDealId = this.getNodeParameter('dealAttachmentDealId', i) as string;
+
+					switch (operation) {
+						case 'getAll':
+							responseData = await getDealAttachments.call(this, dealAttachmentDealId);
+							break;
+
+						case 'create':
+							const dealAttachmentData = buildDealAttachmentData({
+								attachmentUrl: this.getNodeParameter('dealAttachmentUrl', i) as string,
+								fileName: this.getNodeParameter('dealAttachmentFileName', i) as string,
+								fileSize: this.getNodeParameter('dealAttachmentFileSize', i) as number,
+								description: this.getNodeParameter('dealAttachmentDescription', i, '') as string,
+							});
+							responseData = await createDealAttachment.call(this, dealAttachmentDealId, dealAttachmentData);
+							break;
+
+						case 'delete':
+							const dealAttachmentIds = parseDealAttachmentIds(
+								this.getNodeParameter('dealAttachmentIds', i) as string,
+							);
+							if (dealAttachmentIds.length === 0) {
+								throw new NodeOperationError(this.getNode(), 'Informe ao menos um ID de anexo', {
+									itemIndex: i,
+								});
+							}
+							responseData = await deleteDealAttachments.call(this, dealAttachmentDealId, dealAttachmentIds);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'lossReasons') {
+					switch (operation) {
+						case 'getAll':
+							const lossReasonQueryParams = buildLossReasonQueryParams({
+								skip: this.getNodeParameter('lossReasonSkip', i, 0) as number,
+								take: this.getNodeParameter('lossReasonTake', i, 50) as number,
+							});
+							responseData = await getAllLossReasons.call(this, lossReasonQueryParams);
+							break;
+
+						case 'create':
+							const createLossReasonData = buildLossReasonData({
+								name: this.getNodeParameter('lossReasonName', i) as string,
+								requiredJustification: this.getNodeParameter('lossReasonRequiredJustification', i, false) as boolean,
+							}) as any;
+							responseData = await createLossReason.call(this, createLossReasonData);
+							break;
+
+						case 'get':
+							const lossReasonRecordId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							responseData = await getLossReasonById.call(this, lossReasonRecordId);
+							break;
+
+						case 'update':
+							const updateLossReasonId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							const updateLossReasonData = buildLossReasonData({
+								...(this.getNodeParameter('lossReasonUpdateFields', i) as object),
+							});
+							responseData = await updateLossReason.call(this, updateLossReasonId, updateLossReasonData);
+							break;
+
+						case 'delete':
+							const deleteLossReasonId = this.getNodeParameter('lossReasonRecordId', i) as string;
+							responseData = await deleteLossReason.call(this, deleteLossReasonId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'instances') {
+					switch (operation) {
+						case 'getAll':
+							responseData = await getAllInstances.call(this);
+							break;
+
+						case 'get':
+							const instanceId = this.getNodeParameter('instanceId', i) as string;
+							responseData = await getInstanceById.call(this, instanceId);
+							break;
+
+						default:
+							throw new NodeOperationError(
+								this.getNode(),
+								`Operação "${operation}" não é suportada para o recurso "${resource}"`,
+							);
+					}
+				} else if (resource === 'attendants') {
+					switch (operation) {
+						case 'getAllCrm':
+							responseData = await getAllCrmAttendants.call(this);
+							break;
+
+						case 'getCrm':
+							const attendantId = this.getNodeParameter('attendantId', i) as string;
+							responseData = await getCrmAttendantById.call(this, attendantId);
+							break;
+
+						case 'getAllMulti':
+							const multiAttendantsQueryParams = buildMultiAttendantsQueryParams({
+								search: this.getNodeParameter('attendantMultiSearch', i, '') as string,
+							});
+							responseData = await getAllMultiAttendants.call(this, multiAttendantsQueryParams);
+							break;
+
+						case 'getMulti':
+							const attendantMultiId = this.getNodeParameter('attendantMultiId', i) as string;
+							responseData = await getMultiAttendantById.call(this, attendantMultiId);
 							break;
 
 						default:

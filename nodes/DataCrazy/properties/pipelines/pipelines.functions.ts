@@ -2,6 +2,7 @@ import type { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 import type {
 	IPipelineQueryParams,
 	IPipelineListResponse,
+	IPipelineResponse,
 	IStage,
 	IStagesResponse,
 } from './pipelines.types';
@@ -15,23 +16,25 @@ export async function getAllPipelines(
 	queryParams?: IPipelineQueryParams,
 ): Promise<IPipelineListResponse> {
 	try {
-		// Garantir que sempre inclua filter[all]='true'
-		const finalQueryParams = {
-			...queryParams,
-			filter: { all: 'true', ...(queryParams?.filter || {}) }
-		};
-
-		const response = await request(
-			this,
-			'GET',
-			'/pipelines',
-			undefined,
-			finalQueryParams,
-			'https://crm.g1.datacrazy.io/api/crm',
-		);
+		const response = await request(this, 'GET', '/pipelines', undefined, queryParams);
 		return response as IPipelineListResponse;
 	} catch (error: any) {
 		throw new Error(`Erro ao buscar pipelines: ${error.message}`);
+	}
+}
+
+/**
+ * Busca um pipeline por ID
+ */
+export async function getPipelineById(
+	this: IExecuteFunctions,
+	pipelineId: string,
+): Promise<IPipelineResponse> {
+	try {
+		const response = await request(this, 'GET', `/pipelines/${pipelineId}`);
+		return response as IPipelineResponse;
+	} catch (error: any) {
+		throw new Error(`Erro ao buscar pipeline: ${error.message}`);
 	}
 }
 
@@ -47,9 +50,6 @@ export async function getPipelineStages(
 			this,
 			'GET',
 			`/pipelines/${pipelineId}/stages`,
-			undefined,
-			undefined,
-			'https://crm.g1.datacrazy.io/api/crm',
 		);
 		return response as IStagesResponse[];
 	} catch (error: any) {
@@ -69,9 +69,6 @@ export async function getPipelineStagesForLoadOptions(
 			this,
 			'GET',
 			`/pipelines/${pipelineId}/stages`,
-			undefined,
-			undefined,
-			'https://crm.g1.datacrazy.io/api/crm',
 		);
 		return response as IStagesResponse;
 	} catch (error: any) {
@@ -87,9 +84,6 @@ export function buildPipelineQueryParams(
 	search?: string,
 ): IPipelineQueryParams {
 	const params: IPipelineQueryParams = {};
-
-	// Sempre incluir filter[all]='true' para buscar todos os pipelines
-	params.filter = { all: 'true' };
 
 	if (take !== undefined) params.take = take;
 	if (skip !== undefined) params.skip = skip;

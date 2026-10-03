@@ -10,7 +10,7 @@ export async function getAllAdditionalFields(
 	scope: AdditionalFieldScope,
 	queryParams?: IAdditionalFieldQueryParams,
 ): Promise<IAdditionalField[]> {
-	const endpoint = '/crm/crm/additionalFields';
+	const endpoint = '/crm/additionalFields';
 
 	// Mapear scope para entity da API
 	const entity = scope === 'deal' ? 'business' : 'lead';
@@ -39,9 +39,9 @@ export async function setAdditionalFieldValue(
 ): Promise<any> {
 	// Mapear scope para o endpoint correto
 	const entityType = scope === 'deal' ? 'business' : 'lead';
-	const endpoint = `/crm/crm/additional-fields/${entityType}/${entityId}/${additionalFieldId}`;
+	const endpoint = `/crm/additional-fields/${entityType}/${entityId}/${additionalFieldId}`;
 
-	const response = await request(this, 'PUT', endpoint, value);
+	const response = await request(this, 'PUT', endpoint, value, undefined);
 	return response;
 }
 
@@ -58,7 +58,7 @@ export async function getAdditionalFieldsForLoadOptions(
 		// Mapear scope para entity da API
 		const entity = scope === 'deal' ? 'business' : 'lead';
 
-		const endpoint = '/crm/crm/additionalFields';
+		const endpoint = '/crm/additionalFields';
 		const params = {
 			skip: 0,
 			take: 500,

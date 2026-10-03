@@ -29,8 +29,7 @@ export async function finishConversation(
 	context: IExecuteFunctions,
 	conversationId: string,
 ): Promise<any> {
-	const messagingBaseUrl = 'https://messaging.g1.datacrazy.io/api/messaging';
-	return await request(context, 'POST', `/conversations/${conversationId}/finish`, undefined, undefined, messagingBaseUrl);
+	return await request(context, 'POST', `/conversations/${conversationId}/finish`);
 }
 
 export function buildConversationQueryParams(options: any): any {
@@ -68,12 +67,6 @@ export function buildConversationQueryParams(options: any): any {
 		console.log('✅ [DEBUG] Adicionado search:', search);
 	}
 
-	// Processar pipeline como filtro se fornecido
-	if (pipeline !== undefined && pipeline !== null && pipeline !== '') {
-		queryParams['filter[pipeline]'] = pipeline;
-		console.log('✅ [DEBUG] Adicionado filter[pipeline]:', pipeline);
-	}
-
 	// Processar stages como filtro se fornecido
 	if (stages !== undefined && stages !== null && stages !== '') {
 		queryParams['filter[stages]'] = stages;
@@ -94,13 +87,17 @@ export function buildConversationQueryParams(options: any): any {
 
 				if (fieldValue !== undefined && fieldValue !== null && fieldValue !== '') {
 					// Mapear campos para os nomes corretos da API
+					// Nomes da UI mantidos por compatibilidade com workflows salvos
 					const fieldMap: { [key: string]: string } = {
-						initialized: 'initialized',
-						department: 'department',
-						instanceId: 'instanceId',
-						tags: 'tags',
-						attendant: 'attendant',
+						department: 'departments',
+						instanceId: 'instances',
+						attendant: 'attendants',
 					};
+
+					// Filtro removido da API pública
+					if (fieldName === 'initialized') {
+						return;
+					}
 
 					const apiField = fieldMap[fieldName] || fieldName;
 					console.log(`🔍 [DEBUG] Campo mapeado: ${fieldName} -> ${apiField}`);
