@@ -68,7 +68,7 @@ describe('conversations', () => {
 		});
 	});
 
-	it('sendMessage de mídia segue o AttachmentDto público', async () => {
+	it('sendMessage de mídia envia o anexo com size', async () => {
 		const req = await single({
 			resource: 'conversations',
 			operation: 'sendMessage',
@@ -76,12 +76,13 @@ describe('conversations', () => {
 			messageType: 'FILE',
 			attachmentUrl: 'https://x/doc.pdf',
 			fileName: 'doc.pdf',
+			fileSize: 2048,
 			body: 'segue',
 			additionalFields: {},
 		});
 		assert.deepEqual(req.body, {
 			attachments: [
-				{ fileName: 'doc.pdf', mimeType: 'application/pdf', type: 'FILE', url: 'https://x/doc.pdf' },
+				{ file: {}, fileName: 'doc.pdf', mimeType: 'application/pdf', type: 'FILE', url: 'https://x/doc.pdf', size: 2048 },
 			],
 			isInternal: false,
 			body: 'segue',

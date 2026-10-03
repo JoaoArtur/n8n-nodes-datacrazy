@@ -103,6 +103,22 @@ const conversationsFields: INodeProperties[] = [
 	},
 
 	{
+		displayName: 'Tamanho do Arquivo (bytes)',
+		name: 'fileSize',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['conversations'],
+				operation: ['sendMessage'],
+				messageType: ['IMAGE', 'VIDEO', 'AUDIO', 'FILE'],
+			},
+		},
+		default: 0,
+		description: 'Tamanho do arquivo em bytes',
+	},
+
+	{
 		displayName: 'Texto da Mensagem (Opcional)',
 		name: 'body',
 		type: 'string',

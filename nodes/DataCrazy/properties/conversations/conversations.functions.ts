@@ -158,10 +158,12 @@ export function buildMessageData(parameters: any, context?: IExecuteFunctions): 
 		// Para mensagens de mídia, seguir formato específico com attachments
 		if (parameters.attachmentUrl) {
 			const attachment: any = {
+				file: {},
 				fileName: parameters.fileName || `file.${getFileExtensionByType(messageType)}`,
 				mimeType: parameters.mimeType || getMimeTypeByType(messageType),
 				type: messageType,
 				url: parameters.attachmentUrl,
+				size: parameters.fileSize || 0
 			};
 
 			// Criar payload com attachments e isInternal

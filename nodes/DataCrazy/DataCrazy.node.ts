@@ -787,6 +787,7 @@ export class DataCrazy implements INodeType {
 								// Para mensagens de mídia
 								messageParams.attachmentUrl = this.getNodeParameter('attachmentUrl', i) as string;
 								messageParams.fileName = this.getNodeParameter('fileName', i) as string;
+								messageParams.fileSize = this.getNodeParameter('fileSize', i) as number;
 								
 								// Adicionar mimeType se fornecido, senão será determinado automaticamente
 								try {
