@@ -76,9 +76,10 @@ describe('dealAttachments', () => {
 			dealAttachmentDealId: 'B',
 			dealAttachmentUrl: 'https://x/c.pdf',
 			dealAttachmentFileName: 'c.pdf',
+			dealAttachmentFileSize: 512,
 		});
 		assert.equal(`${create.method} ${create.url}`, `POST ${BASE}/business/B/attachments`);
-		assert.deepEqual(create.body, { attachmentUrl: 'https://x/c.pdf', fileName: 'c.pdf' });
+		assert.deepEqual(create.body, { attachmentUrl: 'https://x/c.pdf', fileName: 'c.pdf', fileSize: 512 });
 
 		const del = await single({
 			resource: 'dealAttachments',

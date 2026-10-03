@@ -49,6 +49,20 @@ export const dealAttachmentsFields: INodeProperties[] = [
 		description: 'URL do arquivo anexado',
 	},
 	{
+		displayName: 'Tamanho do Arquivo',
+		name: 'dealAttachmentFileSize',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['dealAttachments'],
+				operation: ['create'],
+			},
+		},
+		default: 0,
+		description: 'Tamanho do arquivo em bytes',
+	},
+	{
 		displayName: 'Nome do Arquivo',
 		name: 'dealAttachmentFileName',
 		type: 'string',

@@ -48,6 +48,7 @@ export function buildDealAttachmentData(data: any): IDealAttachmentCreate {
 	const attachmentData: IDealAttachmentCreate = {
 		attachmentUrl: data.attachmentUrl,
 		fileName: data.fileName,
+		fileSize: data.fileSize,
 	};
 
 	if (data.description !== undefined && data.description !== '') {

@@ -985,6 +985,7 @@ export class DataCrazy implements INodeType {
 							const dealAttachmentData = buildDealAttachmentData({
 								attachmentUrl: this.getNodeParameter('dealAttachmentUrl', i) as string,
 								fileName: this.getNodeParameter('dealAttachmentFileName', i) as string,
+								fileSize: this.getNodeParameter('dealAttachmentFileSize', i) as number,
 								description: this.getNodeParameter('dealAttachmentDescription', i, '') as string,
 							});
 							responseData = await createDealAttachment.call(this, dealAttachmentDealId, dealAttachmentData);

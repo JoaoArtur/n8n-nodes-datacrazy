@@ -16,6 +16,7 @@ export interface IDealAttachment {
 export interface IDealAttachmentCreate {
 	attachmentUrl: string;
 	fileName: string;
+	fileSize: number;
 	description?: string;
 }
 
