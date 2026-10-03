@@ -862,6 +862,8 @@ export class DataCrazy implements INodeType {
 								...(this.getNodeParameter('activityAdditionalFields', i, {}) as object),
 								title: this.getNodeParameter('activityTitle', i) as string,
 								leadId: this.getNodeParameter('activityLeadId', i) as string,
+								startDate: this.getNodeParameter('activityStartDate', i) as string,
+								endDate: this.getNodeParameter('activityEndDate', i) as string,
 							}) as any;
 							responseData = await createActivity.call(this, createActivityData);
 							break;

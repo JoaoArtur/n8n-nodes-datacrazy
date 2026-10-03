@@ -21,17 +21,19 @@ describe('activities', () => {
 		});
 	});
 
-	it('create monta referências e normaliza datas', async () => {
+	// A API exige startDate e endDate no create (o OpenAPI marca como opcionais).
+	it('create envia datas obrigatórias, referências e normaliza datas', async () => {
 		const req = await single({
 			resource: 'activities',
 			operation: 'create',
 			activityTitle: 'Ligar',
 			activityLeadId: 'L',
+			activityStartDate: '2026-01-01T10:00:00.000Z',
+			activityEndDate: '2026-01-01T11:00:00.000Z',
 			activityAdditionalFields: {
 				attendantId: 'A',
 				businessId: 'B',
 				activityTypeId: 'TY',
-				startDate: '2026-01-01T10:00:00.000Z',
 				required: true,
 			},
 		});
@@ -39,6 +41,7 @@ describe('activities', () => {
 		assert.deepEqual(req.body, {
 			title: 'Ligar',
 			startDate: '2026-01-01T10:00:00.000Z',
+			endDate: '2026-01-01T11:00:00.000Z',
 			required: true,
 			lead: { id: 'L' },
 			attendant: { id: 'A' },

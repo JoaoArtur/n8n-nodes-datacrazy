@@ -49,6 +49,35 @@ export const activitiesFields: INodeProperties[] = [
 		description: 'ID do lead vinculado à atividade',
 	},
 
+	{
+		displayName: 'Data de Início',
+		name: 'activityStartDate',
+		type: 'dateTime',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['activities'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'Data de início da atividade',
+	},
+	{
+		displayName: 'Data de Término',
+		name: 'activityEndDate',
+		type: 'dateTime',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['activities'],
+				operation: ['create'],
+			},
+		},
+		default: '',
+		description: 'Data de término da atividade',
+	},
+
 	// Campos adicionais para create e update
 	{
 		displayName: 'Campos Adicionais',
@@ -98,6 +127,11 @@ export const activitiesFields: INodeProperties[] = [
 				displayName: 'Data de Início',
 				name: 'startDate',
 				type: 'dateTime',
+				displayOptions: {
+					show: {
+						'/operation': ['update'],
+					},
+				},
 				default: '',
 				description: 'Data de início da atividade. Formato ISO 8601',
 			},
@@ -105,6 +139,11 @@ export const activitiesFields: INodeProperties[] = [
 				displayName: 'Data de Término',
 				name: 'endDate',
 				type: 'dateTime',
+				displayOptions: {
+					show: {
+						'/operation': ['update'],
+					},
+				},
 				default: '',
 				description: 'Data de término da atividade. Formato ISO 8601',
 			},

@@ -28,8 +28,8 @@ export interface IActivityCreate {
 	title: string;
 	lead: IEntityRef;
 	description?: string;
-	startDate?: string;
-	endDate?: string;
+	startDate: string;
+	endDate: string;
 	attendant?: IEntityRef;
 	required?: boolean;
 	linkToStage?: boolean;
