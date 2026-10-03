@@ -172,7 +172,7 @@ describe('integração: leitura', { skip: skipRead }, () => {
 		assertPaginated(await exec({ resource: 'activities', operation: 'getAll', activityOptions: { take: 1 } }));
 	});
 
-	it('campos adicionais e departamentos (rotas de serviço no host público)', async () => {
+	it('campos adicionais e departamentos (serviços via gateway)', async () => {
 		const leadFields = await exec({ resource: 'additionalFields', operation: 'getAll', scope: 'lead', options: {} });
 		assert.ok(leadFields !== undefined);
 		await exec({ resource: 'additionalFields', operation: 'getAll', scope: 'deal', options: {} });

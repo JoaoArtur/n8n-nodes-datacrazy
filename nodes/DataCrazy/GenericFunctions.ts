@@ -1,6 +1,6 @@
 import { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 
-export const API_HOST = 'https://api.g1.datacrazy.io';
+const API_HOST = 'https://api.g1.datacrazy.io';
 
 export async function request(
 	context: IExecuteFunctions,

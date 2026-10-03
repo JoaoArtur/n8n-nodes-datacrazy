@@ -88,11 +88,11 @@ describe('loadOptions', () => {
 		assert.deepEqual(result, [{ name: 'Preço', value: 'r1' }]);
 	});
 
-	it('getDepartments usa a rota do serviço messaging no host público', async () => {
+	it('getDepartments usa o serviço messaging via gateway /api/v1/messaging', async () => {
 		const { requests, result } = await runLoadOptions('getDepartments', {}, () => ({
 			data: [{ id: 'd1', name: 'Suporte' }],
 		}));
-		assert.equal(requests[0].url, 'https://api.g1.datacrazy.io/api/messaging/departments');
+		assert.equal(requests[0].url, `${BASE}/messaging/departments`);
 		assert.deepEqual(result, [{ name: 'Suporte', value: 'd1' }]);
 	});
 

@@ -1,9 +1,6 @@
 import { IExecuteFunctions, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
-import { API_HOST, request, requestForLoadOptions } from '../../GenericFunctions';
+import { request, requestForLoadOptions } from '../../GenericFunctions';
 import type { IAdditionalField, IAdditionalFieldQueryParams, IAdditionalFieldValue, AdditionalFieldScope } from './additional-fields.types';
-
-// Sem rota em /api/v1: usa a rota do serviço CRM exposta no host público.
-const CRM_BASE_URL = `${API_HOST}/api/crm`;
 
 /**
  * Busca todos os campos adicionais disponíveis
@@ -13,7 +10,7 @@ export async function getAllAdditionalFields(
 	scope: AdditionalFieldScope,
 	queryParams?: IAdditionalFieldQueryParams,
 ): Promise<IAdditionalField[]> {
-	const endpoint = '/additionalFields';
+	const endpoint = '/crm/additionalFields';
 
 	// Mapear scope para entity da API
 	const entity = scope === 'deal' ? 'business' : 'lead';
@@ -26,7 +23,7 @@ export async function getAllAdditionalFields(
 		},
 	};
 
-	const response = await request(this, 'GET', endpoint, undefined, params, CRM_BASE_URL);
+	const response = await request(this, 'GET', endpoint, undefined, params);
 	return response.data || response;
 }
 
@@ -42,9 +39,9 @@ export async function setAdditionalFieldValue(
 ): Promise<any> {
 	// Mapear scope para o endpoint correto
 	const entityType = scope === 'deal' ? 'business' : 'lead';
-	const endpoint = `/additional-fields/${entityType}/${entityId}/${additionalFieldId}`;
+	const endpoint = `/crm/additional-fields/${entityType}/${entityId}/${additionalFieldId}`;
 
-	const response = await request(this, 'PUT', endpoint, value, undefined, CRM_BASE_URL);
+	const response = await request(this, 'PUT', endpoint, value, undefined);
 	return response;
 }
 
@@ -61,7 +58,7 @@ export async function getAdditionalFieldsForLoadOptions(
 		// Mapear scope para entity da API
 		const entity = scope === 'deal' ? 'business' : 'lead';
 
-		const endpoint = '/additionalFields';
+		const endpoint = '/crm/additionalFields';
 		const params = {
 			skip: 0,
 			take: 500,
@@ -70,7 +67,7 @@ export async function getAdditionalFieldsForLoadOptions(
 			},
 		};
 
-		const response = await requestForLoadOptions(this, 'GET', endpoint, undefined, params, CRM_BASE_URL);
+		const response = await requestForLoadOptions(this, 'GET', endpoint, undefined, params);
 		const additionalFields = response.data || response;
 
 		if (!Array.isArray(additionalFields)) {

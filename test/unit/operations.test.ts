@@ -134,10 +134,10 @@ describe('instances e attendants', () => {
 	});
 });
 
-describe('additionalFields (rota do serviço CRM no host público)', () => {
+describe('additionalFields (serviço CRM via gateway /api/v1/crm)', () => {
 	it('getAll por escopo', async () => {
 		const req = await single({ resource: 'additionalFields', operation: 'getAll', scope: 'deal', options: {} });
-		assert.equal(`${req.method} ${req.url}`, 'GET https://api.g1.datacrazy.io/api/crm/additionalFields');
+		assert.equal(`${req.method} ${req.url}`, `GET ${BASE}/crm/additionalFields`);
 		assert.deepEqual(req.query, { skip: '0', take: '500', 'filter[entity]': 'business' });
 	});
 
@@ -150,7 +150,7 @@ describe('additionalFields (rota do serviço CRM no host público)', () => {
 			additionalFieldId: 'F',
 			value: 'v',
 		});
-		assert.equal(`${req.method} ${req.url}`, 'PUT https://api.g1.datacrazy.io/api/crm/additional-fields/lead/L/F');
+		assert.equal(`${req.method} ${req.url}`, `PUT ${BASE}/crm/additional-fields/lead/L/F`);
 		assert.deepEqual(req.body, { value: 'v' });
 	});
 });
